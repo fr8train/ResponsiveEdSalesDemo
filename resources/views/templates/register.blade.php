@@ -46,6 +46,11 @@
             background-clip:         padding-box;
         }
 
+        .testimonialBox {
+            background-color: rgba(51,51,51,0.4);
+            padding: 15px;
+        }
+
         .submitBtn {
             color: #FFF;
             background-color: #FFB600;
