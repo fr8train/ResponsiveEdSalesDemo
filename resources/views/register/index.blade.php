@@ -47,7 +47,7 @@
         }
 
         function searchDomainOfInterest() {
-            var _domain = $("#domain:visible");
+            var _domain = $('[id="domain"]:visible');
             var domainName = _domain.val();
 
             if (domainName) {
