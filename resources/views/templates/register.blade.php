@@ -21,7 +21,7 @@
 
     <style type="text/css">
         body {
-            background-color: #E8930C;
+            background-color: <?= $brand == "brightthinker" ? "#E8930C" : "#D8DFE2" ?>;
         }
 
         #SubmissionFormBox {
