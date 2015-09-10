@@ -9,14 +9,14 @@ use App\Http\Controllers\Controller;
 
 class RegisterController extends Controller
 {
-    public function getKnowledgeu()
+    public function getKnowledgeU()
     {
         return view('register.index',array(
             'brand' => 'knowledgeu'
         ));
     }
 
-    public function getBrightthinker()
+    public function getBrightThinker()
     {
         return view('register.index',array(
             'brand' => 'brightthinker'
