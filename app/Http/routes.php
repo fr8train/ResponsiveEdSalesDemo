@@ -12,3 +12,4 @@
 */
 
 Route::controller('register','Register\\RegisterController');
+Route::controller('dlap','Api\\DlapController');

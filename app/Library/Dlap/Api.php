@@ -28,7 +28,7 @@ class Api
      * HTTP POST cURL Call
      * Takes a string JSON payload and sends transmission
      *
-     * @param string $payload
+     * @param array $payload
      * @return stdClass mixed
      */
     public function post($payload)
@@ -42,7 +42,7 @@ class Api
      *
      * @param string $method
      * @param string|null $command
-     * @param null $payload
+     * @param string|null $payload
      * @return stdClass mixed
      */
     private function transmit($method, $command, $payload = null)

@@ -1,7 +1,7 @@
 <?php
 /**
  * A helper file for Laravel 5, to provide autocomplete information to your IDE
- * Generated for Laravel 5.1.16 (LTS) on 2015-09-08.
+ * Generated for Laravel 5.1.16 (LTS) on 2015-09-10.
  *
  * @author Barry vd. Heuvel <barryvdh@gmail.com>
  * @see https://github.com/barryvdh/laravel-ide-helper
@@ -1096,7 +1096,7 @@ namespace {
          * HTTP POST cURL Call
          * Takes a string JSON payload and sends transmission
          *
-         * @param string $payload
+         * @param array $payload
          * @return \App\Library\Dlap\stdClass mixed
          * @static 
          */
