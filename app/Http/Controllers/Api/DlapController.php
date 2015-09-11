@@ -154,7 +154,7 @@ class DlapController extends Controller
                 'domain' => array(
                     0 => array(
                         'name' => $domainName,
-                        'userspace' => strtolower($domainName)
+                        'userspace' => preg_replace("/[^0-9a-zA-Z]/","",strtolower($domainName))
                     )
                 )
             )
