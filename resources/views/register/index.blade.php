@@ -104,7 +104,7 @@
             <!-- SUBMISSION FORM -->
             <div class="col-xs-12 col-sm-5">
                 <div id="SubmissionFormBox" class="roundedBox">
-                    <form id="SubmissionForm" action="{{ url() }}" method="post" onsubmit="return formSubmission();">
+                    <form id="SubmissionForm" action="{{ Request::url() }}" method="post" onsubmit="return formSubmission();">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <img src="{{ url('img/Logo.png') }}" alt="BrightThinker Logo"
                              class="img-responsive visible-lg visible-xs">
@@ -271,7 +271,7 @@
                          class="img-responsive">
                 </div>
                 <div class="col-xs-12 visible-xs visible-sm">
-                    <form id="SubmissionForm" action="{{ url() }}" method="post" onsubmit="return formSubmission();" style="margin-bottom: 8px;">
+                    <form id="SubmissionForm" action="{{ Request::url() }}" method="post" onsubmit="return formSubmission();" style="margin-bottom: 8px;">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="form-group">
                             <label for="firstname">First name</label>
