@@ -19,4 +19,11 @@ class Token extends Model
      * @var string
      */
     protected $primaryKey = 'brainhoney_user_id';
+
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
 }

@@ -15,26 +15,34 @@
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            }
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json"
         });
 
         // FORM SUBMISSION HANDLING
         function formSubmission() {
             var inputs = $('input:visible');
             var warningModalBody = $('#warningModalMessage');
+            warningModalBody.empty();
+
             var containsErrorSwitch = false;
 
-            $.each(inputs,function(index, value){
+            $.each(inputs, function (index, value) {
                 var _input = $(value);
                 if (!_input.val()) {
                     containsErrorSwitch = true;
                     warningModalBody.append("<h4><i class=\"fa fa-exclamation-circle fa-lg\" style='margin-right: 8px;'></i>" + _input.data('text') + " is missing a value.</h4>");
                 }
 
-                if (_input.attr('id') == "email" &&
-                        !_input.val().match('\S*?@\S*?\.\S{4}')) {
+                if (_input.attr('id') == "email" && !_input.val().match(/\S*?@\S*?\.\S{2,4}/)) {
                     containsErrorSwitch = true;
                     warningModalBody.append("<h4><i class=\"fa fa-exclamation-circle fa-lg\" style='margin-right: 8px;'></i>" + _input.data('text') + " is not a valid " + _input.attr('id') + ".</h4>");
+                }
+
+                if (_input.attr('id') == "domain" && !_input.parent().parent().hasClass('has-success')) {
+                    containsErrorSwitch = true;
+                    warningModalBody.append("<h4><i class=\"fa fa-exclamation-circle fa-lg\" style='margin-right: 8px;'></i>" + _input.data('text') + " is not an available " + _input.attr('id') + ".</h4>");
                 }
             });
 
@@ -52,16 +60,34 @@
 
             if (domainName) {
                 // THERE IS A DOMAIN NAME TO QUERY RETURN BUTTON TO NORMAL
-                _domain.parents("div.form-group").removeClass('has-error has-feedback');
-                _domain.next().children().first().removeClass('btn-danger');
+                _domain.parents("div.form-group").removeClass('has-error has-success has-feedback');
+                _domain.next().children().first().removeClass('btn-danger btn-success');
                 $('[id="domainNotAvailable"]:visible').addClass('hide');
 
-                $.post('{{ url('dlap/check-domain-availability') }}', {
+                var _data = JSON.stringify({
                     domainName: domainName,
                     parentDomainId: '<?= $brand == "brightthinker" ? 27986377 : 27986474 ?>'
-                }, function(response){
-                    console.log(response);
-                },'json');
+                });
+
+                $.ajax({
+                    url: '{{ url('dlap/check-domain-availability') }}',
+                    method: "POST",
+                    data: _data
+                }).complete(function(jqXHR, textStatus){
+                    console.log(textStatus);
+                    console.log(jqXHR);
+
+                    if (textStatus == "error") {
+                        _domain.parents("div.form-group").addClass('has-error has-feedback');
+                        _domain.next().children().first().addClass('btn-danger');
+                        _domain.parent().next().removeClass('hide');
+                    } else if (textStatus == "success") {
+                        _domain.parents("div.form-group").addClass('has-success has-feedback');
+                        _domain.next().children().first().addClass('btn-success');
+                    } else {
+                        alert(textStatus);
+                    }
+                });
             } else { // IF DOMAIN NAME IS BLANK
                 _domain.parents("div.form-group").addClass('has-error has-feedback');
                 _domain.next().children().first().addClass('btn-danger');
@@ -78,7 +104,8 @@
             <!-- SUBMISSION FORM -->
             <div class="col-xs-12 col-sm-5">
                 <div id="SubmissionFormBox" class="roundedBox">
-                    <form id="SubmissionForm" onsubmit="return formSubmission();">
+                    <form id="SubmissionForm" action="{{ url() }}" method="post" onsubmit="return formSubmission();">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <img src="{{ url('img/Logo.png') }}" alt="BrightThinker Logo"
                              class="img-responsive visible-lg visible-xs">
                         <img src="{{ url('img/Logo.png') }}" style="margin-bottom: 17px;" alt="BrightThinker Logo"
@@ -88,7 +115,8 @@
 
                         <div class="form-group">
                             <label for="firstname">First name</label>
-                            <input class="form-control" type="text" id="firstname" data-text="First Name" name="firstname">
+                            <input class="form-control" type="text" id="firstname" data-text="First Name"
+                                   name="firstname">
                         </div>
                         <div class="form-group">
                             <label for="lastname">Last name</label>
@@ -100,15 +128,18 @@
                         </div>
                         <div class="form-group">
                             <label for="password">Password</label>
-                            <input class="form-control" type="password" id="password" data-text="Password" name="password">
+                            <input class="form-control" type="password" id="password" data-text="Password"
+                                   name="password">
                         </div>
                         <div class="form-group">
                             <label class="control-label" for="domain">Domain name</label>
+
                             <div class="input-group">
                                 <input class="form-control" type="text" id="domain" data-text="Domain of Interest"
                                        name="domain">
                                 <span class="input-group-btn">
-                                    <button type="button" onclick="searchDomainOfInterest();" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                    <button type="button" onclick="searchDomainOfInterest();" class="btn btn-default"><i
+                                                class="fa fa-search"></i></button>
                                 </span>
                             </div>
                             <span id="domainNotAvailable" class="help-block hide">Domain is not available - please try another.</span>
@@ -229,7 +260,8 @@
     @else
         <div class="row">
             <!-- SUBMISSION FORM -->
-            <div id="SubmissionFormBox" class="col-xs-12 col-sm-7 roundedBox" style="padding-left: 0px; padding-right: 0px;">
+            <div id="SubmissionFormBox" class="col-xs-12 col-sm-7 roundedBox"
+                 style="padding-left: 0px; padding-right: 0px;">
                 <div class="col-md-5 hidden-xs hidden-sm">
                     <img src="{{ url('img/knowledge_U_vert.png') }}" alt="KnowledgeU Logo"
                          class="img-responsive" style="margin-top: 157px;margin-bottom: 157px;">
@@ -239,10 +271,12 @@
                          class="img-responsive">
                 </div>
                 <div class="col-xs-12 visible-xs visible-sm">
-                    <form id="SubmissionForm" onsubmit="return formSubmission();" style="margin-bottom: 8px;">
+                    <form id="SubmissionForm" action="{{ url() }}" method="post" onsubmit="return formSubmission();" style="margin-bottom: 8px;">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="form-group">
                             <label for="firstname">First name</label>
-                            <input class="form-control" type="text" id="firstname" data-text="First Name" name="firstname">
+                            <input class="form-control" type="text" id="firstname" data-text="First Name"
+                                   name="firstname">
                         </div>
                         <div class="form-group">
                             <label for="lastname">Last name</label>
@@ -254,15 +288,18 @@
                         </div>
                         <div class="form-group">
                             <label for="password">Password</label>
-                            <input class="form-control" type="password" id="password" data-text="Password" name="password">
+                            <input class="form-control" type="password" id="password" data-text="Password"
+                                   name="password">
                         </div>
                         <div class="form-group">
                             <label class="control-label" for="domain">Domain name</label>
+
                             <div class="input-group">
                                 <input class="form-control" type="text" id="domain" data-text="Domain of Interest"
                                        name="domain">
                                 <span class="input-group-btn">
-                                    <button type="button" onclick="searchDomainOfInterest();" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                    <button type="button" onclick="searchDomainOfInterest();" class="btn btn-default"><i
+                                                class="fa fa-search"></i></button>
                                 </span>
                             </div>
                             <span id="domainNotAvailable" class="help-block hide">Domain is not available - please try another.</span>
@@ -271,10 +308,13 @@
                     </form>
                 </div>
                 <div class="hidden-xs hidden-sm col-md-7">
-                    <form id="SubmissionForm" onsubmit="return formSubmission();" style="margin-top: 50px;margin-bottom: 50px;">
+                    <form id="SubmissionForm" action="{{ Request::url() }}" method="post" onsubmit="return formSubmission();"
+                          style="margin-top: 50px;margin-bottom: 50px;">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="form-group">
                             <label for="firstname">First name</label>
-                            <input class="form-control" type="text" id="firstname" data-text="First Name" name="firstname">
+                            <input class="form-control" type="text" id="firstname" data-text="First Name"
+                                   name="firstname">
                         </div>
                         <div class="form-group">
                             <label for="lastname">Last name</label>
@@ -286,15 +326,18 @@
                         </div>
                         <div class="form-group">
                             <label for="password">Password</label>
-                            <input class="form-control" type="password" id="password" data-text="Password" name="password">
+                            <input class="form-control" type="password" id="password" data-text="Password"
+                                   name="password">
                         </div>
                         <div class="form-group">
                             <label class="control-label" for="domain">Domain name</label>
+
                             <div class="input-group">
                                 <input class="form-control" type="text" id="domain" data-text="Domain of Interest"
                                        name="domain">
                                 <span class="input-group-btn">
-                                    <button type="button" onclick="searchDomainOfInterest();" class="btn btn-default"><i class="fa fa-search"></i></button>
+                                    <button type="button" onclick="searchDomainOfInterest();" class="btn btn-default"><i
+                                                class="fa fa-search"></i></button>
                                 </span>
                             </div>
                             <span id="domainNotAvailable" class="help-block hide">Domain is not available - please try another.</span>
@@ -412,21 +455,26 @@
                 </div>
             </div>
         </div>
-    @endif
+        @endif
 
-    <!-- WARNING MODAL -->
-    <div id="warningModal" class="modal fade">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h3 class="modal-title"><strong style="margin-right: 5px;">WARNING</strong><small>Validation errors detected</small></h3>
+                <!-- WARNING MODAL -->
+        <div id="warningModal" class="modal fade">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                                    aria-hidden="true">&times;</span></button>
+                        <h3 class="modal-title"><strong style="margin-right: 5px;">WARNING</strong>
+                            <small>Validation errors detected</small>
+                        </h3>
+                    </div>
+                    <div class="modal-body" id="warningModalMessage">
+                    </div>
                 </div>
-                <div class="modal-body" id="warningModalMessage">
-                </div>
-            </div><!-- /.modal-content -->
-        </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </div><!-- /.modal -->
 @stop
 
 @section('script')

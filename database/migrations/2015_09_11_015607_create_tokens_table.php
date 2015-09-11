@@ -14,7 +14,7 @@ class CreateTokensTable extends Migration
     {
         Schema::create('tokens', function (Blueprint $table) {
             $table->integer('brainhoney_user_id')->unsigned()->primary();
-            $table->string('token');
+            $table->string('token')->index();
             $table->integer('lifespan')->nullable();
             $table->timestamps();
             $table->foreign('brainhoney_user_id')->references('brainhoney_user_id')->on('users');

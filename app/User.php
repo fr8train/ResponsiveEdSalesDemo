@@ -43,4 +43,9 @@ class User extends Model implements AuthenticatableContract,
      * @var bool
      */
     public $timestamps = false;
+
+    public function token()
+    {
+        return $this->hasOne('App\Token','brainhoney_user_id','brainhoney_user_id');
+    }
 }

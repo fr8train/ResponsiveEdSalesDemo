@@ -31,9 +31,9 @@ class Api
      * @param array $payload
      * @return stdClass mixed
      */
-    public function post($payload)
+    public function post($payload, $command = null)
     {
-        return $this->transmit('post', null, json_encode($payload));
+        return $this->transmit('post', $command, json_encode($payload));
     }
 
     /**
@@ -59,14 +59,17 @@ class Api
             )
         );
 
+        if (is_null($command))
+            $opt[CURLOPT_URL] = $this->uri;
+        else
+            $opt[CURLOPT_URL] = "{$this->uri}?$command";
+
         switch ($method) {
             case 'get':
                 $opt[CURLOPT_HTTPGET] = true;
-                $opt[CURLOPT_URL] = "{$this->uri}?$command";
                 break;
             case 'post':
                 $opt[CURLOPT_POST] = true;
-                $opt[CURLOPT_URL] = $this->uri;
                 $opt[CURLOPT_POSTFIELDS] = $payload;
                 array_push($opt[CURLOPT_HTTPHEADER],"Content-Length: " . strlen($payload));
                 break;

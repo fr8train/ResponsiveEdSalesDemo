@@ -14,12 +14,14 @@ class CreateUsersTable extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->integer('brainhoney_user_id')->unsigned()->primary();
-            $table->string('username',75)->unique();
+            $table->string('username',75);
             $table->string('firstname',50);
             $table->string('lastname',50);
             $table->string('email',125)->index();
             $table->integer('domain_id')->unsigned()->index();
-            $table->string('domain_name',75)->index();
+            $table->string('domain_space',75);
+            $table->string('domain_name');
+            $table->unique(array('domain_space','username'));
         });
     }
 

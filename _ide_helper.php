@@ -1,7 +1,7 @@
 <?php
 /**
  * A helper file for Laravel 5, to provide autocomplete information to your IDE
- * Generated for Laravel 5.1.16 (LTS) on 2015-09-10.
+ * Generated for Laravel 5.1.16 (LTS) on 2015-09-11.
  *
  * @author Barry vd. Heuvel <barryvdh@gmail.com>
  * @see https://github.com/barryvdh/laravel-ide-helper
@@ -1100,8 +1100,8 @@ namespace {
          * @return \App\Library\Dlap\stdClass mixed
          * @static 
          */
-        public static function post($payload){
-            return \App\Library\Dlap\Api::post($payload);
+        public static function post($payload, $command = null){
+            return \App\Library\Dlap\Api::post($payload, $command);
         }
         
     }
