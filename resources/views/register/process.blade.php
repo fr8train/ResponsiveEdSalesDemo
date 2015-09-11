@@ -19,6 +19,12 @@
             contentType: "application/json; charset=utf-8",
             dataType: "json"
         });
+
+        function createDomain() {
+        }
+
+        function createUserAccount() {
+        }
     </script>
     <div id="progressBarBox" class="row">
         <div class="col-sm-8 col-sm-offset-2">
