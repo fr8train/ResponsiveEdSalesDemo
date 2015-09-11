@@ -54,16 +54,18 @@
                 // THERE IS A DOMAIN NAME TO QUERY RETURN BUTTON TO NORMAL
                 _domain.parents("div.form-group").removeClass('has-error has-feedback');
                 _domain.next().children().first().removeClass('btn-danger');
+                $('[id="domainNotAvailable"]:visible').addClass('hide');
 
                 $.post('{{ url('dlap/check-domain-availability') }}', {
-                    DomainName: domainName,
-                    ParentDomainId: '<?= $brand == "brightthinker" ? 27986377 : 27986474 ?>'
+                    domainName: domainName,
+                    parentDomainId: '<?= $brand == "brightthinker" ? 27986377 : 27986474 ?>'
                 }, function(response){
                     console.log(response);
                 },'json');
             } else { // IF DOMAIN NAME IS BLANK
                 _domain.parents("div.form-group").addClass('has-error has-feedback');
                 _domain.next().children().first().addClass('btn-danger');
+                _domain.parent().next().removeClass('hide');
             }
         }
     </script>
@@ -109,6 +111,7 @@
                                     <button type="button" onclick="searchDomainOfInterest();" class="btn btn-default"><i class="fa fa-search"></i></button>
                                 </span>
                             </div>
+                            <span id="domainNotAvailable" class="help-block hide">Domain is not available - please try another.</span>
                         </div>
                         <button type="submit" class="btn btn-lg btn-block submitBtn">Register</button>
                     </form>
@@ -262,6 +265,7 @@
                                     <button type="button" onclick="searchDomainOfInterest();" class="btn btn-default"><i class="fa fa-search"></i></button>
                                 </span>
                             </div>
+                            <span id="domainNotAvailable" class="help-block hide">Domain is not available - please try another.</span>
                         </div>
                         <button type="submit" class="btn btn-lg btn-block submitBtn">Register</button>
                     </form>
@@ -293,6 +297,7 @@
                                     <button type="button" onclick="searchDomainOfInterest();" class="btn btn-default"><i class="fa fa-search"></i></button>
                                 </span>
                             </div>
+                            <span id="domainNotAvailable" class="help-block hide">Domain is not available - please try another.</span>
                         </div>
                         <button type="submit" class="btn btn-lg btn-block submitBtn">Register</button>
                     </form>

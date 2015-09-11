@@ -24,16 +24,23 @@ class User extends Model implements AuthenticatableContract,
     protected $table = 'users';
 
     /**
-     * The attributes that are mass assignable.
+     * The primary key for the model.
      *
-     * @var array
+     * @var string
      */
-    protected $fillable = ['name', 'email', 'password'];
+    protected $primaryKey = 'brainhoney_user_id';
 
     /**
-     * The attributes excluded from the model's JSON form.
+     * Indicates if the IDs are auto-incrementing.
      *
-     * @var array
+     * @var bool
      */
-    protected $hidden = ['password', 'remember_token'];
+    public $incrementing = false;
+
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
 }
