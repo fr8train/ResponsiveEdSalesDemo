@@ -6,7 +6,6 @@
         echo "BrightThinker";
     else
         echo "KnowledgeU";
-    $brand
     ?> Sales Demo Registration
 @stop
 

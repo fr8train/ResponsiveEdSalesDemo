@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
+use Hash;
+
 class RegisterController extends Controller
 {
     public function getKnowledgeU()
@@ -23,7 +25,9 @@ class RegisterController extends Controller
         if (isset($input['_token']))
             unset($input['_token']);
 
-        $input['brand'] = 'knowledgeu';
+        $input['brand'] = "knowledgeu";
+        $input['parent_domain_id'] = 27986474;
+        $input['key'] = Hash::make("ku_admin");
 
         return view('register.process',$input);
     }
@@ -42,7 +46,9 @@ class RegisterController extends Controller
         if (isset($input['_token']))
             unset($input['_token']);
 
-        $input['brand'] = 'brightthinker';
+        $input['brand'] = "brightthinker";
+        $input['parent_domain_id'] = 27986377;
+        $input['key'] = Hash::make("bt_admin");
 
         return view('register.process',$input);
     }

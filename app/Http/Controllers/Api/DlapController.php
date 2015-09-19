@@ -14,6 +14,7 @@ use Response;
 use Validator;
 use Api;
 use Cache;
+use Hash;
 
 class DlapController extends Controller
 {
@@ -120,6 +121,120 @@ class DlapController extends Controller
         $domainName = $request->input('domainName');
         $parentDomainId = $request->input('parentDomainId');
 
+        $token = $this->getAdminToken($parentDomainId);
+
+        // CREATE DOMAIN TO TEST AVAILABILITY
+        $response = Api::post(array(
+            'requests' => array(
+                'domain' => array(
+                    0 => array(
+                        'name' => $domainName,
+                        'userspace' => preg_replace("/[^0-9a-zA-Z]/","",strtolower($domainName))
+                    )
+                )
+            )
+        ), "cmd=createdomains&parentid={$parentDomainId}&_token={$token}");
+
+        $this->saveToken($response, $token);
+
+        if (!$this->isOK($response))
+            return $this->__response("Create domain failed", 500, (array)$response->response);
+        else {
+            if (isset($response->response->responses->response[0]->errorId)) {
+                // ERROR WITH CREATE DOMAIN AT THIS POINT IS MOST LIKELY DOMAIN ALREADY EXISTS
+                return $this->__response("Error with create domain: most likely domain already exists.", 403, (array)$response->response->responses->response[0]);
+            } elseif (isset($response->response->responses->response[0]->code) &&
+                $response->response->responses->response[0]->code == "OK") {
+                // CREATE DOMAIN WORKED
+                // DELETE DOMAIN
+                $domainId = $response->response->responses->response[0]->domain->domainid;
+
+                $response = Api::get("cmd=deletedomain&domainid=$domainId&_token={$this->token}");
+                $this->saveToken($response, $this->token);
+
+                return $this->__response("Domain is available.", 200);
+            } else {
+                return $this->__response("Unknown response", 500, (array)$response->response);
+            }
+        }
+    }
+
+    /**
+     * Create domain
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function postCreateDomain(Request $request) {
+
+        if ($request->has("token")) {
+            $token = $request->get("token");
+        } else {
+            $token = "";
+            $decrypted = $request->get("parentDomainId") == 27986377 ? "bt_admin" : "ku_admin";
+
+            if ($request->has("key") && Hash::check($decrypted,$request->get("key")))
+                $token = $this->getAdminToken($request->get("parentDomainId"));
+        }
+
+        $resourceDomainId = $request->get("parentDomainId") == 27986377 ? 34204009 : 34204006;
+
+        $domainSpace = preg_replace("/[^0-9a-zA-Z]/","",strtolower($request->get('domainName')));
+
+        $response = Api::post(array(
+            'requests' => array(
+                'domain' => array(
+                    0 => array(
+                        'name' => $request->get('domainName'),
+                        'userspace' => $domainSpace,
+                        'data' => array(
+                            'resourcebase' => array(
+                                'DomainId' => $resourceDomainId
+                            )
+                        )
+                    )
+                )
+            )
+        ), "cmd=createdomains&parentid={$request->get('parentDomainId')}&_token=$token");
+
+        $this->saveToken($response, $token);
+
+        if (!$this->isOK($response))
+            return $this->__response("Create domain failed", 500, (array)$response->response);
+        else {
+            if (isset($response->response->responses->response[0]->errorId)) {
+                // ERROR WITH CREATE DOMAIN AT THIS POINT IS MOST LIKELY DOMAIN ALREADY EXISTS
+                return $this->__response("Error with create domain: most likely domain already exists.", 403, (array)$response->response->responses->response[0]);
+            } elseif (isset($response->response->responses->response[0]->code) &&
+                $response->response->responses->response[0]->code == "OK") {
+                // CREATE DOMAIN WORKED
+
+                return $this->__response("Domain created.", 200, array(
+                    "userspace" => $domainSpace
+                ));
+            } else {
+                return $this->__response("Unknown response", 500, (array)$response->response);
+            }
+        }
+    }
+
+    /**
+     * Checks to see if response has status code of "OK"
+     *
+     * @param \stdClass $response
+     * @return bool
+     */
+    private function isOK(\stdClass &$response) {
+        return $response->response->code == "OK";
+    }
+
+    /**
+     * Exchanges the parentDomainId for an authentication token for the admin account for that domain ID
+     *
+     * @param int $parentDomainId
+     * @return string
+     */
+    private function getAdminToken($parentDomainId) {
         // FIGURE OUT WHICH ADMIN USER WE NEED TO USE
         $admin = $parentDomainId == 27986377 ? env('BT_ADMIN_USER') : env('KU_ADMIN_USER');
         $adminDomain = $parentDomainId == 27986377 ? env('BT_ADMIN_DOMAIN') : env('KU_ADMIN_DOMAIN');
@@ -148,40 +263,7 @@ class DlapController extends Controller
             $token = $user->token->token;
         }
 
-        // CREATE DOMAIN TO TEST AVAILABILITY
-        $response = Api::post(array(
-            'requests' => array(
-                'domain' => array(
-                    0 => array(
-                        'name' => $domainName,
-                        'userspace' => preg_replace("/[^0-9a-zA-Z]/","",strtolower($domainName))
-                    )
-                )
-            )
-        ), "cmd=createdomains&parentid={$parentDomainId}&_token={$token}");
-
-        $response = $this->saveToken($response, $token);
-
-        if ($response->response->code != "OK")
-            return $this->__response("Create domain failed", 500, (array)$response->response);
-        else {
-            if (isset($response->response->responses->response[0]->errorId)) {
-                // ERROR WITH CREATE DOMAIN AT THIS POINT IS MOST LIKELY DOMAIN ALREADY EXISTS
-                return $this->__response("Error with create domain: most likely domain already exists.", 403, (array)$response->response->responses->response[0]);
-            } elseif (isset($response->response->responses->response[0]->code) &&
-                $response->response->responses->response[0]->code == "OK") {
-                // CREATE DOMAIN WORKED
-                // DELETE DOMAIN
-                $domainId = $response->response->responses->response[0]->domain->domainid;
-
-                $response = Api::get("cmd=deletedomain&domainid=$domainId&_token={$this->token}");
-                $this->saveToken($response, $this->token);
-
-                return $this->__response("Domain exists", 200);
-            } else {
-                return $this->__response("Unknown response", 500, (array)$response->response);
-            }
-        }
+        return $token;
     }
 
     /**
@@ -189,11 +271,10 @@ class DlapController extends Controller
      *
      * @param \stdClass $response
      * @param $token
-     * @return \stdClass
      */
     private function saveToken(\stdClass &$response, $token)
     {
-        if ($response->response->code == "OK" &&
+        if ($this->isOK($response) &&
             isset($response->response->_token)
         ) {
             $token = Token::where('token', $token)->first();
@@ -201,7 +282,6 @@ class DlapController extends Controller
             $this->token = $response->response->_token;
             $token->save();
         }
-        return $response;
     }
 
     /**
