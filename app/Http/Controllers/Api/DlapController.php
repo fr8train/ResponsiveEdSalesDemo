@@ -218,6 +218,139 @@ class DlapController extends Controller
         }
     }
 
+    public function postCreateUsers(Request $request) {
+        if ($request->has("token")) {
+            $token = $request->get("token");
+        } else {
+            $token = "";
+            $decrypted = $request->get("parentDomainId") == 27986377 ? "bt_admin" : "ku_admin";
+
+            if ($request->has("key") && Hash::check($decrypted,$request->get("key")))
+                $token = $this->getAdminToken($request->get("parentDomainId"));
+        }
+
+        $response = Api::post(array(
+            'requests' => array(
+                'user' => array(
+                    array(
+                        'username' => 'student',
+                        'password' => 'password',
+                        'firstname' => 'Test',
+                        'lastname' => 'Student',
+                        'email' => '',
+                        'domainid' => "//{$request->get('userspace')}"
+                    ),array(
+                        'username' => "{$request->get('email')}",
+                        'password' => "{$request->get('password')}",
+                        'firstname' => "{$request->get('firstname')}",
+                        'lastname' => "{$request->get('lastname')}",
+                        'email' => "{$request->get('email')}",
+                        'domainid' => "//{$request->get('userspace')}"
+                    )
+                )
+            )
+        ),"cmd=createusers2&_token=$token");
+
+        if (!$this->isOK($response))
+            return $this->__response("Create domain failed", 500, (array)$response->response);
+        else {
+            $this->saveToken($response, $token);
+
+            if (isset($response->response->responses->response[0]->errorId)) {
+                // ERROR WITH CREATE DOMAIN AT THIS POINT IS MOST LIKELY DOMAIN ALREADY EXISTS
+                return $this->__response("Error with create domain: most likely domain already exists.", 403, (array)$response->response->responses->response[0]);
+            } elseif (isset($response->response->responses->response[0]->code) &&
+                $response->response->responses->response[0]->code == "OK") {
+                // CREATE DOMAIN WORKED
+
+                return $this->__response("Users created.", 200, array(
+                    "student" => array(
+                        'id' => $response->response->responses->response[0]->user->userid,
+                        'username' => 'student',
+                        'password' => 'password'
+                    ),
+                    "teacher" => array(
+                        'id' => $response->response->responses->response[1]->user->userid,
+                        'username' => "{$request->get('email')}",
+                        'password' => "{$request->get('password')}"
+                    )
+                ));
+            } else {
+                return $this->__response("Unknown response", 500, (array)$response->response);
+            }
+        }
+    }
+
+    public function postEnrollUsers(Request $request) {
+        if ($request->has("token")) {
+            $token = $request->get("token");
+        } else {
+            $token = "";
+            $decrypted = $request->get("parentDomainId") == 27986377 ? "bt_admin" : "ku_admin";
+
+            if ($request->has("key") && Hash::check($decrypted,$request->get("key")))
+                $token = $this->getAdminToken($request->get("parentDomainId"));
+        }
+
+        $courseDomainSpace = $request->get("parentDomainId") == 27986377 ? "btcourses" : "kucourses";
+
+        $usersToBeCopied = array();
+        $response = Api::get("cmd=listusers&domainid=//$courseDomainSpace&_token=$token");
+        $this->saveToken($response, $token);
+
+        foreach($response->response->users->user as $user) {
+            $usersToBeCopied[$user->username] = (object) array(
+                'id' => $user->id,
+                'enrollments' => array()
+            );
+
+            $response2 = Api::get("cmd=listuserenrollments&userid={$user->id}&_token=$token");
+
+            foreach($response2->response->enrollments->enrollment as $enrollment) {
+                $usersToBeCopied[$user->username]->enrollments[$enrollment->courseid] = $enrollment->privileges;
+            }
+        }
+
+        $courseDictionary = array();
+
+        foreach($usersToBeCopied as $userType => $userToBeCopied) {
+            foreach($userToBeCopied->enrollments as $courseId => $rights) {
+                // IF NEW COURSE DOESN'T EXIST WE NEED TO MAKE IT
+                if (!array_key_exists($courseId, $courseDictionary)) {
+                    $response = Api::post(array(
+                        'requests' => array(
+                            'course' => array(
+                                array(
+                                    'courseid' => $courseId,
+                                    'domainid' => "//{$request->get('userspace')}",
+                                    'action' => 'DerivativeChildCopy'
+                                )
+                            )
+                        )
+                    ),"cmd=copycourses&_token=$token");
+                    $this->saveToken($response, $token);
+
+                    $courseDictionary[$courseId] = $response->response->responses->response[0]->course->courseid;
+                }
+
+                $response = Api::post(array(
+                    'requests' => array(
+                        'enrollment' => array(
+                            array(
+                                'userid' => $request->get("{$userType}Id"),
+                                'entityid' => $courseDictionary[$courseId],
+                                'flags' => $rights,
+                                'status' => 1
+                            )
+                        )
+                    )
+                ),"cmd=createenrollments&_token=$token");
+            }
+        }
+
+        return $this->__response("Finished enrollment creation.");
+    }
+
     /**
      * Checks to see if response has status code of "OK"
      *
