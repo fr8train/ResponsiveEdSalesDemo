@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\DlapController;
+
 /*
 |--------------------------------------------------------------------------
 | Application Routes
@@ -11,5 +13,16 @@
 |
 */
 
-Route::controller('register','Register\\RegisterController');
-Route::controller('dlap','Api\\DlapController');
+Route::controller('register', 'Register\\RegisterController');
+Route::controller('dlap', 'Api\\DlapController');
+Route::controller('auth', 'Auth\\AuthController');
+
+Route::get('/', function () {
+    $dlap = new DlapController();
+
+    if ($dlap->isAuthenticated()) {
+        return "Logged in.";
+    } else {
+        return redirect('auth/login');
+    }
+});
