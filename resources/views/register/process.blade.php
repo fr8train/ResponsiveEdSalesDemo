@@ -54,7 +54,8 @@
                         <dt>Password</dt>
                         <dd id="TeacherPassword"></dd>
                     </dl>
-                    <button type="button" onclick="consumeUserInfo()" class="btn center-block submitBtn">I have saved
+                    <button type="button" onclick="consumeUserInfo()" style="white-space: normal;"
+                            class="btn center-block submitBtn">I have saved
                         the user info and want to
                         continue the registration process.
                     </button>
@@ -199,8 +200,10 @@
         function navigateToNewDomain() {
             console.log(registeredUserSpace);
             statusMessage.empty().html("Navigating to new domain...");
-            statusBar.css("width", "100%").attr("aria-valuenow", 100);
-            window.location.href = "http://" + registeredUserSpace + ".agilixbuzz.com";
+            setTimeout(function () {
+                statusBar.css("width", "100%").attr("aria-valuenow", 100);
+                window.location.href = "http://" + registeredUserSpace + ".agilixbuzz.com";
+            }, 1500);
         }
 
         function dlap(uri, _data, func) {

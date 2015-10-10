@@ -29,20 +29,35 @@
 
             $.each(inputs, function (index, value) {
                 var _input = $(value);
+                var _message = "";
                 if (!_input.val()) {
                     containsErrorSwitch = true;
-                    warningModalBody.append("<h4><i class=\"fa fa-exclamation-circle fa-lg\" style='margin-right: 8px;'></i>" + _input.data('text') + " is missing a value.</h4>");
+                    _message = _input.data('text') + " is missing a value.";
                 }
 
                 if (_input.attr('id') == "email" && !_input.val().match(/\S*?@\S*?\.\S{2,4}/)) {
                     containsErrorSwitch = true;
-                    warningModalBody.append("<h4><i class=\"fa fa-exclamation-circle fa-lg\" style='margin-right: 8px;'></i>" + _input.data('text') + " is not a valid " + _input.attr('id') + ".</h4>");
+                    _message = _input.data('text') + " is not a valid " + _input.attr('id');
                 }
 
                 if (_input.attr('id') == "domain" && !_input.parent().parent().hasClass('has-success')) {
+                    _message = "You need to verify the domain you've picked.<br/>Please click on the search button (magnifying glass).";
+                    if (_input.parent().parent().hasClass('has-error'))
+                        _message = _input.data('text') + " is not an available " + _input.attr('id');
                     containsErrorSwitch = true;
-                    warningModalBody.append("<h4><i class=\"fa fa-exclamation-circle fa-lg\" style='margin-right: 8px;'></i>" + _input.data('text') + " is not an available " + _input.attr('id') + ".</h4>");
                 }
+
+                var newRow = $("<tr></tr>")
+                        .addClass('text-danger')
+                        .append(
+                        $("<td></td>")
+                                .attr('valign','top')
+                                .html($("<i></i>")
+                                        .attr('class', 'fa fa-exclamation-circle fa-lg center-block')))
+                        .append(
+                        $("<td></td>")
+                                .html(_message));
+                warningModalBody.append(newRow);
             });
 
             if (containsErrorSwitch) {
@@ -72,7 +87,7 @@
                     url: '{{ url('dlap/check-domain-availability') }}',
                     method: "POST",
                     data: _data
-                }).complete(function(jqXHR, textStatus){
+                }).complete(function (jqXHR, textStatus) {
                     console.log(textStatus);
                     console.log(jqXHR);
 
@@ -103,7 +118,8 @@
             <!-- SUBMISSION FORM -->
             <div class="col-xs-12 col-sm-5">
                 <div id="SubmissionFormBox" class="roundedBox">
-                    <form id="SubmissionForm" action="{{ Request::url() }}" method="post" onsubmit="return formSubmission();">
+                    <form id="SubmissionForm" action="{{ Request::url() }}" method="post"
+                          onsubmit="return formSubmission();">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <img src="{{ url('img/Logo.png') }}" alt="BrightThinker Logo"
                              class="img-responsive visible-lg visible-xs">
@@ -270,8 +286,10 @@
                          class="img-responsive">
                 </div>
                 <div class="col-xs-12 visible-xs visible-sm">
-                    <form id="SubmissionForm" action="{{ Request::url() }}" method="post" onsubmit="return formSubmission();" style="margin-bottom: 8px;">
+                    <form id="SubmissionForm" action="{{ Request::url() }}" method="post"
+                          onsubmit="return formSubmission();" style="margin-bottom: 8px;">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
+
                         <div class="form-group">
                             <label for="firstname">First name</label>
                             <input class="form-control" type="text" id="firstname" data-text="First Name"
@@ -307,9 +325,11 @@
                     </form>
                 </div>
                 <div class="hidden-xs hidden-sm col-md-7">
-                    <form id="SubmissionForm" action="{{ Request::url() }}" method="post" onsubmit="return formSubmission();"
+                    <form id="SubmissionForm" action="{{ Request::url() }}" method="post"
+                          onsubmit="return formSubmission();"
                           style="margin-top: 50px;margin-bottom: 50px;">
                         <input type="hidden" name="_token" value="{{ csrf_token() }}">
+
                         <div class="form-group">
                             <label for="firstname">First name</label>
                             <input class="form-control" type="text" id="firstname" data-text="First Name"
@@ -463,11 +483,21 @@
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                     aria-hidden="true">&times;</span></button>
-                        <h3 class="modal-title"><strong style="margin-right: 5px;">WARNING</strong>
+                        <h3 class="modal-title"><strong style="margin-right: 5px;">WARNING</strong><br class="visible-xs"/>
                             <small>Validation errors detected</small>
                         </h3>
                     </div>
-                    <div class="modal-body" id="warningModalMessage">
+                    <div class="modal-body">
+                        <table>
+                            <thead>
+                            <tr>
+                                <th width="25" style="width: 25px;"></th>
+                                <th></th>
+                            </tr>
+                            </thead>
+                            <tbody id="warningModalMessage">
+                            </tbody>
+                        </table>
                     </div>
                 </div>
                 <!-- /.modal-content -->
