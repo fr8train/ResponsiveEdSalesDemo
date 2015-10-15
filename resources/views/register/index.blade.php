@@ -10,6 +10,70 @@
 @stop
 
 @section('body')
+    <?php
+    $brightThinker = array();
+    $brightThinker['aboutUs'] = "<p>BrightThinker is at the forefront of the new educational model–“Blended Education.” This dynamic, comprehensive, web-delivered eCurriculum is designed for the 3rd-5th grades. As today’s students have changed, so have their educational expectations and academic needs. BrightThinker combines rigorous content, rich multimedia, and the Internet to generate academic discovery, so students receive a real-world online education experience.<p>
+<h4 class='custom-header'>RIGOROUS ACADEMICS</h4><hr class='custom-divider'><p>Through rigorous academics, students are prepared for success as measured by standardized assessments and collegiate preparedness.</p>
+<h4 class='custom-header'>EXCEEDS STANDARDS</h4><hr class='custom-divider'><p>The development team has developed educational products that adhere to state and national standards in both architecture and content.</p>
+<h4 class='custom-header'>ONLINE EDUCATIONAL MODEL</h4><hr class='custom-divider'><p>The online classroom model better prepares students for academic success at the next level in the growing online college environment.</p>";
+
+    $brightThinker['testimonials'] = "<blockquote style='border-left: none;'>
+  <p>“The BrightThinker courses have helped my teachers and students…we love them!”</p>
+  <footer>A Texas online school</footer>
+</blockquote>
+<blockquote style='border-left: none;'>
+  <p>“We love it!  The students enjoy the courses, and my educators appreciate the flexibility!”</p>
+  <footer>A Washington, DC area school</footer>
+</blockquote>";
+    $brightThinker['tryFree'] = "<h4 class='text-center'>Then let’s get started!</h4>
+<p>Just complete the registration form on this page by filling in the blanks to create your personal login and password.</p>
+<p>Then enter your school’s name or school domain name in the “Domain Name” field.</p>
+<p>Now click the magnifying glass to see if it is available. If it turns <span style='color:#d9534f; font-weight: bold;'>RED</span>, try another name.  If it turns <span style='color:#5cb85c; font-weight: bold;'>GREEN</span>, you are on your way.</p>
+<br>
+<h4 class='text-center'>For the next 30 days, have fun and let us know what you think!</h4>";
+
+    $knowledgeU = array();
+    $knowledgeU['aboutUs'] = "<p>KnowledgeU is at the forefront of the new educational model–“Blended Education.” This dynamic, comprehensive, web-delivered eCurriculum is designed for the 6th-12th grades. As today’s students have changed, so have their educational expectations and academic needs. KnowledgeU combines rigorous content, rich multimedia, and the Internet to generate academic discovery, so students receive a real-world online education experience.<p>
+<h4 class='custom-header'>RIGOROUS ACADEMICS</h4><hr class='custom-divider'><p>Through rigorous academics, students are prepared for success as measured by standardized assessments and collegiate preparedness.</p>
+<h4 class='custom-header'>EXCEEDS STANDARDS</h4><hr class='custom-divider'><p>The development team has developed educational products that adhere to state and national standards in both architecture and content.</p>
+<h4 class='custom-header'>ONLINE EDUCATIONAL MODEL</h4><hr class='custom-divider'><p>The online classroom model better prepares students for academic success at the next level in the growing online college environment.</p>";
+
+    $knowledgeU['testimonials'] = "<blockquote style='border-left: none;'>
+  <p>“The KnowledgeU courses challenge and prepare our students.  We love the quality and rigorous academics!”</p>
+  <footer>A Washington state online school</footer>
+</blockquote>
+<blockquote style='border-left: none;'>
+  <p>“We love KnowledgeU!  Our students enjoy their classes, and we love the value and academics!”</p>
+  <footer>An East Coast school</footer>
+</blockquote>";
+    $knowledgeU['tryFree'] = "<h4 class='text-center'>Then let’s get started!</h4>
+<p>Just complete the registration form on this page by filling in the blanks to create your personal login and password.</p>
+<p>Then enter your school’s name or school domain name in the “Domain Name” field.</p>
+<p>Now click the magnifying glass to see if it is available. If it turns <span style='color:#d9534f; font-weight: bold;'>RED</span>, try another name.  If it turns <span style='color:#5cb85c; font-weight: bold;'>GREEN</span>, you are on your way.</p>
+<br>
+<h4 class='text-center'>For the next 30 days, have fun and let us know what you think!</h4>";
+    ?>
+    <style type="text/css">
+        .custom-header {
+            margin: 20px 0px 5px;
+        }
+
+        .custom-divider {
+            margin: 0px 0px 5px;
+        }
+
+        .content-section {
+            overflow-y: auto;
+            padding-top: 15px;
+            height: 380px;
+            max-height: 380px;
+            color: white;
+        }
+
+        blockquote footer {
+            color: lightgrey;
+        }
+    </style>
     <script type="text/javascript">
         $.ajaxSetup({
             headers: {
@@ -51,7 +115,7 @@
                         .addClass('text-danger')
                         .append(
                         $("<td></td>")
-                                .attr('valign','top')
+                                .attr('valign', 'top')
                                 .html($("<i></i>")
                                         .attr('class', 'fa fa-exclamation-circle fa-lg center-block')))
                         .append(
@@ -110,7 +174,7 @@
         }
     </script>
     @if($brand == "brightthinker")
-        <div class="row">
+        <div id="content" class="row">
             <!-- PROFESSOR ED -->
             <div class="col-sm-2 hidden-xs">
                 <img width="270px" src="{{ url('img/ProfessorEd.png') }}" id="ProfessorEd" alt="Professor Ed Full">
@@ -166,106 +230,32 @@
             <!-- TESTIMONIALS -->
             <div class="col-sm-5 hidden-xs">
                 <div class="roundedBox testimonialBox">
-                    <div class="panel-group" id="accordion" style="margin-bottom: 0px" role="tablist"
-                         aria-multiselectable="true">
-                        <div class="panel panel-default" style="border: none; background: none; color: #FFF;">
-                            <div class="btn btn-lg btn-block submitBtn" role="tab" id="headingOne">
-                                <h4 class="panel-title">
-                                    <a role="button" style="font-weight: 700 !important; font-size: 18px !important;"
-                                       data-toggle="collapse" data-parent="#accordion" href="#collapseOne"
-                                       aria-expanded="true" aria-controls="collapseOne">
-                                        About Us
-                                    </a>
-                                </h4>
-                            </div>
-                            <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel"
-                                 aria-labelledby="headingOne">
-                                <div class="panel-body" style="max-height: 432px; overflow-y: auto;">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque dui lorem, commodo
-                                    suscipit mollis maximus, fermentum non mi. Sed in tincidunt eros, a accumsan diam.
-                                    In nunc turpis, imperdiet et elit eget, tempor sagittis nisl. Praesent feugiat est
-                                    diam, et finibus elit auctor at. Nullam tellus nibh, maximus ac tempor vitae, auctor
-                                    eu elit. Duis at metus auctor, commodo odio sed, malesuada nulla. Vestibulum lectus
-                                    nisl, laoreet id ipsum et, vulputate congue nibh. Nulla a ante volutpat, condimentum
-                                    metus nec, blandit augue.
-
-                                    Donec magna felis, tincidunt in aliquet vitae, dapibus sodales eros. Fusce faucibus
-                                    volutpat lacus, sed imperdiet mi volutpat feugiat. Maecenas dictum neque nec
-                                    malesuada suscipit. Proin vestibulum cursus sem ut blandit. Sed ultricies nisl nec
-                                    massa fringilla, ullamcorper commodo dui dignissim. Vivamus bibendum elit a placerat
-                                    placerat. Nam felis felis, consectetur quis felis ut, sollicitudin viverra felis.
-
-                                    Phasellus facilisis nibh quis tincidunt condimentum. Nulla blandit in lacus eu
-                                    tristique. Proin tempus libero at augue suscipit finibus. Nulla sed molestie libero.
-                                    Pellentesque efficitur bibendum dui, id egestas tortor dapibus a. Aliquam enim dui,
-                                    blandit id ultricies vel, gravida nec ipsum. Vestibulum ante ipsum primis in
-                                    faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas maximus placerat
-                                    orci nec dictum. Nullam imperdiet, tellus quis commodo scelerisque, risus libero
-                                    tristique tellus, ac congue tortor nisi ut lacus.
-
-                                    Cras auctor erat eu molestie laoreet. Vivamus eget risus justo. Aenean bibendum id
-                                    libero nec porttitor. Fusce ac pulvinar lorem. Vivamus fringilla fringilla ipsum,
-                                    vitae volutpat mi interdum vitae. Suspendisse congue maximus mi, a elementum urna
-                                    sodales eu. Aenean interdum felis interdum lectus lobortis imperdiet. Integer ut
-                                    odio rutrum, scelerisque sapien molestie, viverra velit. Etiam sollicitudin, ipsum
-                                    id vulputate viverra, justo lorem semper purus, at tincidunt magna nisi non ante.
-                                    Mauris in mauris purus. Nam suscipit augue ipsum, eget finibus ex fermentum ac.
-                                    Aenean semper velit eu risus tristique hendrerit. Pellentesque semper, mauris ac
-                                    porta imperdiet, eros urna pretium metus, at ultricies tellus nunc et nunc. Duis id
-                                    dui finibus odio placerat tristique.
-
-                                    Pellentesque vestibulum risus quis ex imperdiet, non aliquam magna sagittis. Proin
-                                    nec metus at dolor ornare scelerisque congue non lectus. Nullam imperdiet dolor sed
-                                    metus lobortis, a malesuada dolor vulputate. Vivamus mattis velit vitae est
-                                    fermentum, in tempus elit facilisis. Nunc sed gravida nisi, posuere feugiat diam.
-                                    Maecenas id iaculis nunc. Morbi sed varius tortor. Vestibulum eget elementum ligula.
-                                    Pellentesque sit amet risus at arcu mattis semper nec porttitor enim. Sed euismod
-                                    metus et turpis dictum congue.
-
-                                    Nunc id mauris est. Vestibulum pulvinar arcu sit amet molestie egestas. Duis eu nisl
-                                    nunc. Pellentesque diam felis, efficitur non tellus sit amet, mattis facilisis
-                                    nulla. Cras viverra ex ut mi facilisis feugiat. Nam lacinia ligula id dolor
-                                    facilisis interdum. Proin tincidunt feugiat congue. Fusce id porta dolor. Nam tellus
-                                    nibh, luctus eu quam at, pharetra sagittis turpis. Phasellus condimentum arcu sit
-                                    amet massa tristique molestie. Phasellus at massa ac velit congue consequat. Donec
-                                    rhoncus et urna eget lobortis. Mauris id risus elit. Nam mi orci, malesuada id ex
-                                    venenatis, euismod convallis dolor.
-
-                                    Nulla vitae orci a augue imperdiet dignissim a eget urna. Donec tincidunt purus dui,
-                                    nec tristique odio dignissim id. In feugiat commodo placerat. Etiam quis ipsum at
-                                    quam imperdiet faucibus. Donec vulputate urna vitae sapien sagittis, sit amet
-                                    sodales metus blandit. Curabitur aliquet purus eu accumsan commodo. Donec eget massa
-                                    ac mauris finibus faucibus non in nisi. Quisque euismod, nulla sed ullamcorper
-                                    gravida, mauris nisi ornare erat, vel tristique elit arcu ut ex. Etiam sit amet odio
-                                    lacus. Integer ante sem, cursus sit amet eleifend vitae, semper at sem. Praesent
-                                    feugiat, ipsum in rhoncus fermentum, quam enim commodo nibh, quis fringilla orci
-                                    elit quis risus. Praesent mollis elit vel pellentesque accumsan.
-                                </div>
+                    <button type="button" id="brightThinkerAboutUsBtn" class="btn submitBtn btn-lg btn-block">About Us
+                    </button>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="content-section collapse in" id="brightThinkerAboutUs">
+                                <?= $brightThinker['aboutUs'] ?>
                             </div>
                         </div>
-                        <div class="panel panel-default" style="border: none; background: none; color: #FFF;">
-                            <div class="btn btn-lg btn-block submitBtn" role="tab" id="headingTwo">
-                                <h4 class="panel-title">
-                                    <a class="collapsed"
-                                       style="font-weight: 700 !important; font-size: 18px !important;" role="button"
-                                       data-toggle="collapse" data-parent="#accordion"
-                                       href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                        Testimonials
-                                    </a>
-                                </h4>
+                    </div>
+                    <button type="button" id="brightThinkerTestimonialsBtn" class="btn submitBtn btn-lg btn-block">
+                        Testimonials
+                    </button>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="content-section collapse" id="brightThinkerTestimonials">
+                                <?= $brightThinker['testimonials'] ?>
                             </div>
-                            <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel"
-                                 aria-labelledby="headingTwo">
-                                <div class="panel-body" style="max-height: 432px; overflow-y: auto;">
-                                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry
-                                    richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor
-                                    brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt
-                                    aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et.
-                                    Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente
-                                    ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer
-                                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them
-                                    accusamus labore sustainable VHS.
-                                </div>
+                        </div>
+                    </div>
+                    <button type="button" id="brightThinkerTestDriveBtn" class="btn submitBtn btn-lg btn-block">Test drive
+                        for free?
+                    </button>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="content-section collapse" id="brightThinkerTestDrive">
+                                <?= $brightThinker['tryFree'] ?>
                             </div>
                         </div>
                     </div>
@@ -273,7 +263,7 @@
             </div>
         </div>
     @else
-        <div class="row">
+        <div id="content" class="row">
             <!-- SUBMISSION FORM -->
             <div id="SubmissionFormBox" class="col-xs-12 col-sm-7 roundedBox"
                  style="padding-left: 0px; padding-right: 0px;">
@@ -361,113 +351,39 @@
                             </div>
                             <span id="domainNotAvailable" class="help-block hide">Domain is not available - please try another.</span>
                         </div>
-                        <button type="submit" class="btn btn-lg btn-block submitBtn">Register</button>
+                        <button type="submit" class="btn submitBtn btn-lg btn-block">Register</button>
                     </form>
                 </div>
             </div>
             <!-- TESTIMONIALS -->
             <div class="col-sm-5 hidden-xs">
                 <div class="roundedBox testimonialBox">
-                    <div class="panel-group" id="accordion" style="margin-bottom: 0px" role="tablist"
-                         aria-multiselectable="true">
-                        <div class="panel panel-default" style="border: none; background: none; color: #FFF;">
-                            <div class="btn btn-lg btn-block submitBtn" role="tab" id="headingOne">
-                                <h4 class="panel-title">
-                                    <a role="button" style="font-weight: 700 !important; font-size: 18px !important;"
-                                       data-toggle="collapse" data-parent="#accordion" href="#collapseOne"
-                                       aria-expanded="true" aria-controls="collapseOne">
-                                        About Us
-                                    </a>
-                                </h4>
-                            </div>
-                            <div id="collapseOne" class="panel-collapse collapse in" role="tabpanel"
-                                 aria-labelledby="headingOne">
-                                <div class="panel-body" style="max-height: 432px; overflow-y: auto;">
-                                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque dui lorem, commodo
-                                    suscipit mollis maximus, fermentum non mi. Sed in tincidunt eros, a accumsan diam.
-                                    In nunc turpis, imperdiet et elit eget, tempor sagittis nisl. Praesent feugiat est
-                                    diam, et finibus elit auctor at. Nullam tellus nibh, maximus ac tempor vitae, auctor
-                                    eu elit. Duis at metus auctor, commodo odio sed, malesuada nulla. Vestibulum lectus
-                                    nisl, laoreet id ipsum et, vulputate congue nibh. Nulla a ante volutpat, condimentum
-                                    metus nec, blandit augue.
-
-                                    Donec magna felis, tincidunt in aliquet vitae, dapibus sodales eros. Fusce faucibus
-                                    volutpat lacus, sed imperdiet mi volutpat feugiat. Maecenas dictum neque nec
-                                    malesuada suscipit. Proin vestibulum cursus sem ut blandit. Sed ultricies nisl nec
-                                    massa fringilla, ullamcorper commodo dui dignissim. Vivamus bibendum elit a placerat
-                                    placerat. Nam felis felis, consectetur quis felis ut, sollicitudin viverra felis.
-
-                                    Phasellus facilisis nibh quis tincidunt condimentum. Nulla blandit in lacus eu
-                                    tristique. Proin tempus libero at augue suscipit finibus. Nulla sed molestie libero.
-                                    Pellentesque efficitur bibendum dui, id egestas tortor dapibus a. Aliquam enim dui,
-                                    blandit id ultricies vel, gravida nec ipsum. Vestibulum ante ipsum primis in
-                                    faucibus orci luctus et ultrices posuere cubilia Curae; Maecenas maximus placerat
-                                    orci nec dictum. Nullam imperdiet, tellus quis commodo scelerisque, risus libero
-                                    tristique tellus, ac congue tortor nisi ut lacus.
-
-                                    Cras auctor erat eu molestie laoreet. Vivamus eget risus justo. Aenean bibendum id
-                                    libero nec porttitor. Fusce ac pulvinar lorem. Vivamus fringilla fringilla ipsum,
-                                    vitae volutpat mi interdum vitae. Suspendisse congue maximus mi, a elementum urna
-                                    sodales eu. Aenean interdum felis interdum lectus lobortis imperdiet. Integer ut
-                                    odio rutrum, scelerisque sapien molestie, viverra velit. Etiam sollicitudin, ipsum
-                                    id vulputate viverra, justo lorem semper purus, at tincidunt magna nisi non ante.
-                                    Mauris in mauris purus. Nam suscipit augue ipsum, eget finibus ex fermentum ac.
-                                    Aenean semper velit eu risus tristique hendrerit. Pellentesque semper, mauris ac
-                                    porta imperdiet, eros urna pretium metus, at ultricies tellus nunc et nunc. Duis id
-                                    dui finibus odio placerat tristique.
-
-                                    Pellentesque vestibulum risus quis ex imperdiet, non aliquam magna sagittis. Proin
-                                    nec metus at dolor ornare scelerisque congue non lectus. Nullam imperdiet dolor sed
-                                    metus lobortis, a malesuada dolor vulputate. Vivamus mattis velit vitae est
-                                    fermentum, in tempus elit facilisis. Nunc sed gravida nisi, posuere feugiat diam.
-                                    Maecenas id iaculis nunc. Morbi sed varius tortor. Vestibulum eget elementum ligula.
-                                    Pellentesque sit amet risus at arcu mattis semper nec porttitor enim. Sed euismod
-                                    metus et turpis dictum congue.
-
-                                    Nunc id mauris est. Vestibulum pulvinar arcu sit amet molestie egestas. Duis eu nisl
-                                    nunc. Pellentesque diam felis, efficitur non tellus sit amet, mattis facilisis
-                                    nulla. Cras viverra ex ut mi facilisis feugiat. Nam lacinia ligula id dolor
-                                    facilisis interdum. Proin tincidunt feugiat congue. Fusce id porta dolor. Nam tellus
-                                    nibh, luctus eu quam at, pharetra sagittis turpis. Phasellus condimentum arcu sit
-                                    amet massa tristique molestie. Phasellus at massa ac velit congue consequat. Donec
-                                    rhoncus et urna eget lobortis. Mauris id risus elit. Nam mi orci, malesuada id ex
-                                    venenatis, euismod convallis dolor.
-
-                                    Nulla vitae orci a augue imperdiet dignissim a eget urna. Donec tincidunt purus dui,
-                                    nec tristique odio dignissim id. In feugiat commodo placerat. Etiam quis ipsum at
-                                    quam imperdiet faucibus. Donec vulputate urna vitae sapien sagittis, sit amet
-                                    sodales metus blandit. Curabitur aliquet purus eu accumsan commodo. Donec eget massa
-                                    ac mauris finibus faucibus non in nisi. Quisque euismod, nulla sed ullamcorper
-                                    gravida, mauris nisi ornare erat, vel tristique elit arcu ut ex. Etiam sit amet odio
-                                    lacus. Integer ante sem, cursus sit amet eleifend vitae, semper at sem. Praesent
-                                    feugiat, ipsum in rhoncus fermentum, quam enim commodo nibh, quis fringilla orci
-                                    elit quis risus. Praesent mollis elit vel pellentesque accumsan.
-                                </div>
+                    <button type="button" id="KnowledgeUAboutUsBtn" class="btn submitBtn btn-lg btn-block">About Us
+                    </button>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="content-section collapse in" id="KnowledgeUAboutUs">
+                                <?= $knowledgeU['aboutUs'] ?>
                             </div>
                         </div>
-                        <div class="panel panel-default" style="border: none; background: none; color: #FFF;">
-                            <div class="btn btn-lg btn-block submitBtn" role="tab" id="headingTwo">
-                                <h4 class="panel-title">
-                                    <a class="collapsed"
-                                       style="font-weight: 700 !important; font-size: 18px !important;" role="button"
-                                       data-toggle="collapse" data-parent="#accordion"
-                                       href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-                                        Testimonials
-                                    </a>
-                                </h4>
+                    </div>
+                    <button type="button" id="KnowledgeUTestimonialsBtn" class="btn submitBtn btn-lg btn-block">
+                        Testimonials
+                    </button>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="content-section collapse" id="KnowledgeUTestimonials">
+                                <?= $knowledgeU['testimonials'] ?>
                             </div>
-                            <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel"
-                                 aria-labelledby="headingTwo">
-                                <div class="panel-body" style="max-height: 432px; overflow-y: auto;">
-                                    Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry
-                                    richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor
-                                    brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt
-                                    aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et.
-                                    Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente
-                                    ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer
-                                    farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them
-                                    accusamus labore sustainable VHS.
-                                </div>
+                        </div>
+                    </div>
+                    <button type="button" id="KnowledgeUTestDriveBtn" class="btn submitBtn btn-lg btn-block">Test drive
+                        for free?
+                    </button>
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <div class="content-section collapse" id="KnowledgeUTestDrive">
+                                <?= $knowledgeU['tryFree'] ?>
                             </div>
                         </div>
                     </div>
@@ -483,7 +399,8 @@
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
                                     aria-hidden="true">&times;</span></button>
-                        <h3 class="modal-title"><strong style="margin-right: 5px;">WARNING</strong><br class="visible-xs"/>
+                        <h3 class="modal-title"><strong style="margin-right: 5px;">WARNING</strong><br
+                                    class="visible-xs"/>
                             <small>Validation errors detected</small>
                         </h3>
                     </div>
@@ -509,6 +426,8 @@
 @section('script')
     <script type="text/javascript">
         $(document).ready(function () {
+            var targetSection;
+
             // OBJECT CENTERING
             centerObjects();
 
@@ -516,9 +435,13 @@
                 centerObjects();
             })
 
+            $(".collapse").on('hidden.bs.collapse', function () {
+                targetSection.collapse('show');
+            });
+
             function centerObjects() {
                 var _window = $(window);
-                var _box = $('.row');
+                var _box = $('#content');
                 var _marginTop;
 
                 if (_box.height() >= _window.height())
@@ -528,6 +451,17 @@
 
                 _box.css('margin-top', _marginTop + 'px');
             }
+
+            // CUSTOM ACCORDIAN
+            $("#KnowledgeUTestDriveBtn, #KnowledgeUTestimonialsBtn, #KnowledgeUAboutUsBtn, #brightThinkerAboutUsBtn, #brightThinkerTestDriveBtn, #brightThinkerTestimonialsBtn").click(function () {
+                var _this = $(this);
+                targetSection = $("#" + _this.attr('id').split('Btn')[0]);
+                //console.log("#" + _this.attr('id').split('Btn')[0]);
+
+                if (!targetSection.hasClass('in')) {
+                    $(".collapse.in").collapse('hide');
+                }
+            });
         }, jQuery);
     </script>
 @stop
