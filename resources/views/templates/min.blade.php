@@ -25,12 +25,14 @@
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.js"></script>
     @endif
 
+    <style>
+        body {
+            background-color: #eee;
+        }
+    </style>
 </head>
 <body>
-<div class="container">
-    @yield('body')
-</div>
-
+@yield('body')
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
