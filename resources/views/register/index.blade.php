@@ -18,12 +18,12 @@
 <h4 class='custom-header'>ONLINE EDUCATIONAL MODEL</h4><hr class='custom-divider'><p>The online classroom model better prepares students for academic success at the next level in the growing online college environment.</p>";
 
     $brightThinker['testimonials'] = "<blockquote style='border-left: none;'>
-  <p>“The BrightThinker courses have helped my teachers and students…we love them!”</p>
-  <footer>A Texas online school</footer>
+  <p>“The COMPREHEND curriculum has helped my teachers and students.  Even our SpEd students have experienced success due to the fun, multi-media approach.  Our students enjoy the online learning and that’s the biggest plus.”</p>
+  <footer>Ms. Rogeness, Associate Director of Texas Virtual Academy</footer>
 </blockquote>
 <blockquote style='border-left: none;'>
-  <p>“We love it!  The students enjoy the courses, and my educators appreciate the flexibility!”</p>
-  <footer>A Washington, DC area school</footer>
+  <p>“The students are enjoying the COMPREHEND curriculum, and my educators appreciate the flexibility!  Our students love the ability to proceed based on their ability.  We know that this approach is better preparing them for college.”</p>
+  <footer>Mr. Griffin, Director of Premier Charter School of Lubbock</footer>
 </blockquote>";
     $brightThinker['tryFree'] = "<h4 class='text-center'>Then let’s get started!</h4>
 <p>Just complete the registration form on this page by filling in the blanks to create your personal login and password.</p>
@@ -38,14 +38,7 @@
 <h4 class='custom-header'>EXCEEDS STANDARDS</h4><hr class='custom-divider'><p>The development team has developed educational products that adhere to state and national standards in both architecture and content.</p>
 <h4 class='custom-header'>ONLINE EDUCATIONAL MODEL</h4><hr class='custom-divider'><p>The online classroom model better prepares students for academic success at the next level in the growing online college environment.</p>";
 
-    $knowledgeU['testimonials'] = "<blockquote style='border-left: none;'>
-  <p>“The KnowledgeU courses challenge and prepare our students.  We love the quality and rigorous academics!”</p>
-  <footer>A Washington state online school</footer>
-</blockquote>
-<blockquote style='border-left: none;'>
-  <p>“We love KnowledgeU!  Our students enjoy their classes, and we love the value and academics!”</p>
-  <footer>An East Coast school</footer>
-</blockquote>";
+    $knowledgeU['testimonials'] = $brightThinker['testimonials'];
     $knowledgeU['tryFree'] = "<h4 class='text-center'>Then let’s get started!</h4>
 <p>Just complete the registration form on this page by filling in the blanks to create your personal login and password.</p>
 <p>Then enter your school’s name or school domain name in the “Domain Name” field.</p>
