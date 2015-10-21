@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\DlapController;
+use App\User;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,7 +22,12 @@ Route::get('/', function () {
     $dlap = new DlapController();
 
     if ($dlap->isAuthenticated()) {
-        return "Logged in.";
+        $user = User::where('username',Cache::get('username'))
+            ->with('token')
+            ->first();
+        return view('home',array(
+            'user' => $user
+        ));
     } else {
         return redirect('auth/login');
     }

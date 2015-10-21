@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Auth;
 
 use App\User;
-use Validator;
+use App\Http\Controllers\Api\DlapController;
+use Illuminate\Http\Request;
+use Cache;
+use Api;
 use App\Http\Controllers\Controller;
 
 class AuthController extends Controller
 {
+    private $dlap;
     /*
     |--------------------------------------------------------------------------
     | Registration & Login Controller
@@ -19,7 +23,45 @@ class AuthController extends Controller
     |
     */
 
+    public function __construct() {
+        $this->dlap = new DlapController();
+    }
+
     public function getLogin() {
         return view('auth.index');
+    }
+
+    public function postLogin(Request $request) {
+        //var_dump($request->all());
+
+        if ($request->get('domain') == "responsiveed") {
+            if (!$this->dlap->isAuthenticated($request->get('username'))) {
+                $result = $this->dlap->postLogin(new Request(array(
+                    'domainName' => $request->get('domain'),
+                    'username' => $request->get('username'),
+                    'password' => $request->get('password')
+                )));
+                $response = $result->getData();
+
+                if ($response->payload->code != "OK") {
+                    return redirect('auth/login')->with('error','Login unsuccessful.');
+                }
+
+                // CHECK FOR ADMIN LEVEL RIGHTS ON RESPONSIVE ED DOMAIN
+                $result = Api::get("cmd=getrights&actorid={$response->payload->user->userid}&entityid=12444139&_token={$response->payload->_token}");
+                if ($result->response->code != "OK" ||
+                    $result->response->rights->flags != "-1") {
+                    header("Location: http://{$request->get('domain')}.agilixbuzz.com/");
+                    die();
+                }
+
+                Cache::forever('username',$request->get('username'));
+            }
+
+            return redirect('/');
+        } else {
+            header("Location: http://{$request->get('domain')}.agilixbuzz.com/");
+            die();
+        }
     }
 }

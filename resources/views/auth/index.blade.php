@@ -9,7 +9,14 @@
                 <div style="background-color: white; border-radius: 8px; box-sizing: border-box; padding: 1px 13px;">
                     <h1 class="text-center"><i class="fa fa-cog" style="margin-right: 8px;"></i>Login</h1>
 
+                    @if (session('error'))
+                        <div class="alert alert-danger" role="alert">
+                            <strong>Oh snap!</strong> {{ session('error') }}
+                        </div>
+                    @endif
+
                     <form action="{{ url("auth/login") }}" method="post">
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
                         <div class="form-group">
                             <label for="domain">Domain</label>
                             <input type="text" class="form-control" id="domain" name="domain">

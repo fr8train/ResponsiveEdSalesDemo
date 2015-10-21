@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    @if (isset($user->token->token))
+        <meta name="dlap-token" content="{{ $user->token->token }}">
+    @endif
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description"
           content="The employee administrative interface will contain default administrative capabilities.">

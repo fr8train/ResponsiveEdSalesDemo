@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests;
 use App\User;
 use App\Token;
+use Carbon\Carbon;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\MessageBag;
@@ -129,7 +130,7 @@ class DlapController extends Controller
                 'domain' => array(
                     0 => array(
                         'name' => $domainName,
-                        'userspace' => preg_replace("/[^0-9a-zA-Z]/","",strtolower($domainName))
+                        'userspace' => preg_replace("/[^0-9a-zA-Z]/", "", strtolower($domainName))
                     )
                 )
             )
@@ -144,7 +145,8 @@ class DlapController extends Controller
                 // ERROR WITH CREATE DOMAIN AT THIS POINT IS MOST LIKELY DOMAIN ALREADY EXISTS
                 return $this->__response("Error with create domain: most likely domain already exists.", 403, (array)$response->response->responses->response[0]);
             } elseif (isset($response->response->responses->response[0]->code) &&
-                $response->response->responses->response[0]->code == "OK") {
+                $response->response->responses->response[0]->code == "OK"
+            ) {
                 // CREATE DOMAIN WORKED
                 // DELETE DOMAIN
                 $domainId = $response->response->responses->response[0]->domain->domainid;
@@ -165,7 +167,8 @@ class DlapController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function postCreateDomain(Request $request) {
+    public function postCreateDomain(Request $request)
+    {
 
         if ($request->has("token")) {
             $token = $request->get("token");
@@ -173,13 +176,13 @@ class DlapController extends Controller
             $token = "";
             $decrypted = $request->get("parentDomainId") == 27986377 ? "bt_admin" : "ku_admin";
 
-            if ($request->has("key") && Hash::check($decrypted,$request->get("key")))
+            if ($request->has("key") && Hash::check($decrypted, $request->get("key")))
                 $token = $this->getAdminToken($request->get("parentDomainId"));
         }
 
         $resourceDomainId = $request->get("parentDomainId") == 27986377 ? 34204009 : 34204006;
 
-        $domainSpace = preg_replace("/[^0-9a-zA-Z]/","",strtolower($request->get('domainName')));
+        $domainSpace = preg_replace("/[^0-9a-zA-Z]/", "", strtolower($request->get('domainName')));
 
         $response = Api::post(array(
             'requests' => array(
@@ -206,7 +209,8 @@ class DlapController extends Controller
                 // ERROR WITH CREATE DOMAIN AT THIS POINT IS MOST LIKELY DOMAIN ALREADY EXISTS
                 return $this->__response("Error with create domain: most likely domain already exists.", 403, (array)$response->response->responses->response[0]);
             } elseif (isset($response->response->responses->response[0]->code) &&
-                $response->response->responses->response[0]->code == "OK") {
+                $response->response->responses->response[0]->code == "OK"
+            ) {
                 // CREATE DOMAIN WORKED
 
                 return $this->__response("Domain created.", 200, array(
@@ -218,14 +222,15 @@ class DlapController extends Controller
         }
     }
 
-    public function postCreateUsers(Request $request) {
+    public function postCreateUsers(Request $request)
+    {
         if ($request->has("token")) {
             $token = $request->get("token");
         } else {
             $token = "";
             $decrypted = $request->get("parentDomainId") == 27986377 ? "bt_admin" : "ku_admin";
 
-            if ($request->has("key") && Hash::check($decrypted,$request->get("key")))
+            if ($request->has("key") && Hash::check($decrypted, $request->get("key")))
                 $token = $this->getAdminToken($request->get("parentDomainId"));
         }
 
@@ -239,7 +244,7 @@ class DlapController extends Controller
                         'lastname' => 'Student',
                         'email' => '',
                         'domainid' => "//{$request->get('userspace')}"
-                    ),array(
+                    ), array(
                         'username' => "{$request->get('email')}",
                         'password' => "{$request->get('password')}",
                         'firstname' => "{$request->get('firstname')}",
@@ -249,7 +254,7 @@ class DlapController extends Controller
                     )
                 )
             )
-        ),"cmd=createusers2&_token=$token");
+        ), "cmd=createusers2&_token=$token");
 
         if (!$this->isOK($response))
             return $this->__response("Create domain failed", 500, (array)$response->response);
@@ -260,7 +265,8 @@ class DlapController extends Controller
                 // ERROR WITH CREATE DOMAIN AT THIS POINT IS MOST LIKELY DOMAIN ALREADY EXISTS
                 return $this->__response("Error with create domain: most likely domain already exists.", 403, (array)$response->response->responses->response[0]);
             } elseif (isset($response->response->responses->response[0]->code) &&
-                $response->response->responses->response[0]->code == "OK") {
+                $response->response->responses->response[0]->code == "OK"
+            ) {
                 // CREATE DOMAIN WORKED
 
                 return $this->__response("Users created.", 200, array(
@@ -281,14 +287,15 @@ class DlapController extends Controller
         }
     }
 
-    public function postEnrollUsers(Request $request) {
+    public function postEnrollUsers(Request $request)
+    {
         if ($request->has("token")) {
             $token = $request->get("token");
         } else {
             $token = "";
             $decrypted = $request->get("parentDomainId") == 27986377 ? "bt_admin" : "ku_admin";
 
-            if ($request->has("key") && Hash::check($decrypted,$request->get("key")))
+            if ($request->has("key") && Hash::check($decrypted, $request->get("key")))
                 $token = $this->getAdminToken($request->get("parentDomainId"));
         }
 
@@ -298,23 +305,23 @@ class DlapController extends Controller
         $response = Api::get("cmd=listusers&domainid=//$courseDomainSpace&_token=$token");
         $this->saveToken($response, $token);
 
-        foreach($response->response->users->user as $user) {
-            $usersToBeCopied[$user->username] = (object) array(
+        foreach ($response->response->users->user as $user) {
+            $usersToBeCopied[$user->username] = (object)array(
                 'id' => $user->id,
                 'enrollments' => array()
             );
 
             $response2 = Api::get("cmd=listuserenrollments&userid={$user->id}&_token=$token");
 
-            foreach($response2->response->enrollments->enrollment as $enrollment) {
+            foreach ($response2->response->enrollments->enrollment as $enrollment) {
                 $usersToBeCopied[$user->username]->enrollments[$enrollment->courseid] = $enrollment->privileges;
             }
         }
 
         $courseDictionary = array();
 
-        foreach($usersToBeCopied as $userType => $userToBeCopied) {
-            foreach($userToBeCopied->enrollments as $courseId => $rights) {
+        foreach ($usersToBeCopied as $userType => $userToBeCopied) {
+            foreach ($userToBeCopied->enrollments as $courseId => $rights) {
                 // IF NEW COURSE DOESN'T EXIST WE NEED TO MAKE IT
                 if (!array_key_exists($courseId, $courseDictionary)) {
                     $response = Api::post(array(
@@ -327,7 +334,7 @@ class DlapController extends Controller
                                 )
                             )
                         )
-                    ),"cmd=copycourses&_token=$token");
+                    ), "cmd=copycourses&_token=$token");
                     $this->saveToken($response, $token);
 
                     $courseDictionary[$courseId] = $response->response->responses->response[0]->course->courseid;
@@ -344,7 +351,7 @@ class DlapController extends Controller
                             )
                         )
                     )
-                ),"cmd=createenrollments&_token=$token");
+                ), "cmd=createenrollments&_token=$token");
             }
         }
 
@@ -357,7 +364,8 @@ class DlapController extends Controller
      * @param \stdClass $response
      * @return bool
      */
-    private function isOK(\stdClass &$response) {
+    private function isOK(\stdClass &$response)
+    {
         return $response->response->code == "OK";
     }
 
@@ -367,7 +375,8 @@ class DlapController extends Controller
      * @param int $parentDomainId
      * @return string
      */
-    private function getAdminToken($parentDomainId) {
+    private function getAdminToken($parentDomainId)
+    {
         // FIGURE OUT WHICH ADMIN USER WE NEED TO USE
         $admin = $parentDomainId == 27986377 ? env('BT_ADMIN_USER') : env('KU_ADMIN_USER');
         $adminDomain = $parentDomainId == 27986377 ? env('BT_ADMIN_DOMAIN') : env('KU_ADMIN_DOMAIN');
@@ -413,6 +422,7 @@ class DlapController extends Controller
             $token = Token::where('token', $token)->first();
             $token->token = $response->response->_token;
             $this->token = $response->response->_token;
+            $token->updated_at = Carbon::now()->toDateTimeString();
             $token->save();
         }
     }
@@ -462,6 +472,7 @@ class DlapController extends Controller
         if ($this->hasExpired($user->token->updated_at, $user->token->lifespan)) // TOKEN EXISTS BUT IS EXPIRED
             return false;
 
+        $this->token = $user->token->token;
         return true;
     }
 
@@ -475,6 +486,51 @@ class DlapController extends Controller
     private function hasExpired($updated_at, $mins)
     {
         return strtotime('now') > strtotime("{$updated_at} + {$mins} minutes");
+    }
+
+    public function getAllDomains()
+    {
+        if ($this->isAuthenticated()) {
+            $domains = array();
+            // GET ALL BTDEMO DOMAINS
+            $result = Api::get("cmd=listdomains&domainid=//btdemo&_token={$this->token}");
+            $this->saveToken($result, $this->token);
+
+            $domains['btdemo'] = $result->response->domains->domain;
+
+            // GET ALL KUDEMO DOMAINS
+            $result = Api::get("cmd=listdomains&domainid=//kudemo&_token={$this->token}");
+            $this->saveToken($result, $this->token);
+
+            $domains['kudemo'] = $result->response->domains->domain;
+
+            return $this->__response("Domains gathered.", 200, $domains);
+        } else {
+            return $this->__response("User is not authenticated.", 401);
+        }
+    }
+
+    public function getDomain($id)
+    {
+        if ($this->isAuthenticated()) {
+            $response = array();
+            $result = Api::get("cmd=getdomain2&domainid=$id&_token={$this->token}");
+            $this->saveToken($result, $this->token);
+
+            $response['domain'] = $result->response->domain;
+
+            $result = Api::get("cmd=listusers&domainid=$id&_token={$this->token}");
+            $this->saveToken($result, $this->token);
+
+            if (isset($result->response->users->user))
+                $response['users'] = $result->response->users->user;
+            else
+                $response['users'] = $result->response->users;
+
+            return $this->__response("Info for Domain (ID=$id) gathered.", 200, $response);
+        } else {
+            return $this->__response("User is not authenticated.", 401);
+        }
     }
 
     /**
