@@ -49,7 +49,7 @@
 
                         var kuDomains = $('<div></div>')
                                 .attr('class', 'col-sm-6')
-                                .append($('<h3><img height="32" alt="BTLogo" src="{{ url('img/KnowledgeUBox.png') }}" style="cursor: pointer;" onclick="window.location.href=\'{{ url('register/knowledge-u') }}\';">KnowledgeU Domains</h3>'));
+                                .append($('<h3><img height="32" alt="BTLogo" src="{{ url('img/KnowledgeUBox.png') }}" style="cursor: pointer;" onclick="window.location.href=\'{{ url('register/knowledge-u') }}\';" >KnowledgeU Domains</h3>'));
 
                         $.each(data.payload.kudemo, function (k, v) {
                             kuDomains.append(createDomainDisplayCard(v));
