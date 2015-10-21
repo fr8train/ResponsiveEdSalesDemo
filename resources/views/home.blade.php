@@ -41,7 +41,7 @@
 
                         var btDomains = $('<div></div>')
                                 .attr('class', 'col-sm-6')
-                                .append($('<h3><img height="32" alt="BTLogo" src="{{ url('img/ProfessorEd-headshot.png') }}" style="cursor: pointer;" onclick="window.location.href=\'{{ url('register/bright-thinker') }}\';" target="_blank">BrightThinker Domains</h3>'));
+                                .append($('<h3><a target="_blank" href="{{ url('register/bright-thinker') }}"><img height="32" alt="BTLogo" src="{{ url('img/ProfessorEd-headshot.png') }}"></a>BrightThinker Domains</h3>'));
 
                         $.each(data.payload.btdemo, function (k, v) {
                             btDomains.append(createDomainDisplayCard(v));
@@ -49,7 +49,7 @@
 
                         var kuDomains = $('<div></div>')
                                 .attr('class', 'col-sm-6')
-                                .append($('<h3><img height="32" alt="BTLogo" src="{{ url('img/KnowledgeUBox.png') }}" style="cursor: pointer;" onclick="window.location.href=\'{{ url('register/knowledge-u') }}\';" target="_blank">KnowledgeU Domains</h3>'));
+                                .append($('<h3><a target="_blank" href="{{ url('register/knowledge-u') }}"><img height="32" alt="BTLogo" src="{{ url('img/KnowledgeUBox.png') }}"></a>KnowledgeU Domains</h3>'));
 
                         $.each(data.payload.kudemo, function (k, v) {
                             kuDomains.append(createDomainDisplayCard(v));
