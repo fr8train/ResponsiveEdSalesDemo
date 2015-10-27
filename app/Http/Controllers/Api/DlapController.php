@@ -436,17 +436,17 @@ class DlapController extends Controller
      */
     public function isAuthenticated($username = null)
     {
-        // FIRST CHECK CACHE FOR USERNAME
-        if (Cache::has('username')) {
+        if (!is_null($username)) {
+            // SAME AS ABOVE BUT USING THE PROVIDED USERNAME INSTEAD OF A CACHED ONE
+            return $this->checkUsernameForAuthentication($username);
+        } elseif (Cache::has('username')) {
+            // FIRST CHECK CACHE FOR USERNAME
             // LOOK UP USERNAME IN USERS.TOKENS TO SEE IF USER IS AUTHENTICATED
             // RETURN FALSE IF:
             //   USER DOESN'T EXIST IN USERS TABLE
             //   NO TOKEN FOR THIS USER
             //   TOKEN REFRESH FAILS
             return $this->checkUsernameForAuthentication(Cache::get('username'));
-        } elseif (!is_null($username)) {
-            // SAME AS ABOVE BUT USING THE PROVIDED USERNAME INSTEAD OF A CACHED ONE
-            return $this->checkUsernameForAuthentication($username);
         }
 
         return false;
