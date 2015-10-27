@@ -305,6 +305,11 @@
                                    name="password">
                         </div>
                         <div class="form-group">
+                            <label for="reference">Phone number</label>
+                            <input class="form-control" type="text" id="reference" data-text="Phone number"
+                                   name="reference">
+                        </div>
+                        <div class="form-group">
                             <label class="control-label" for="domain">Domain name</label>
 
                             <div class="input-group">
@@ -343,6 +348,11 @@
                             <label for="password">Password</label>
                             <input class="form-control" type="password" id="password" data-text="Password"
                                    name="password">
+                        </div>
+                        <div class="form-group">
+                            <label for="reference">Phone number</label>
+                            <input class="form-control" type="text" id="reference" data-text="Phone number"
+                                   name="reference">
                         </div>
                         <div class="form-group">
                             <label class="control-label" for="domain">Domain name</label>
