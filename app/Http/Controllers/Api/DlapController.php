@@ -464,16 +464,25 @@ class DlapController extends Controller
             ->where('username', $username)
             ->first();
 
-        if (is_null($user)) // NO USER EXISTS ON OUR SIDE
+        if (is_null($user)) {// NO USER EXISTS ON OUR SIDE
             return false;
+        }
 
-        if (is_null($user->token)) // NO TOKEN FOR THIS USER
+        if (is_null($user->token)) {// NO TOKEN FOR THIS USER
             return false;
+        }
 
-        if ($this->hasExpired($user->token->updated_at, $user->token->lifespan)) // TOKEN EXISTS BUT IS EXPIRED
+        if ($this->hasExpired($user->token->updated_at, $user->token->lifespan)) {// TOKEN EXISTS BUT IS EXPIRED
+            if (Cache::has('username'))
+                Cache::forget('username');
             return false;
+        }
 
         $this->token = $user->token->token;
+
+        if (!Cache::has('username'))
+            Cache::forever('username',$username);
+
         return true;
     }
 

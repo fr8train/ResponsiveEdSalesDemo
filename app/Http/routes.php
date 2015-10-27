@@ -22,12 +22,14 @@ Route::get('/', function () {
     $dlap = new DlapController();
 
     if ($dlap->isAuthenticated()) {
-        $user = User::where('username',Cache::get('username'))
+        $user = User::where('username', Cache::get('username'))
             ->with('token')
             ->first();
-        return view('home',array(
-            'user' => $user
-        ));
+        if ($user->domain_space == "responsiveed")
+            return view('home', array(
+                'user' => $user
+            ));
+        else return redirect('auth/login');
     } else {
         return redirect('auth/login');
     }
