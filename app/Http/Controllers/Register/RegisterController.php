@@ -25,6 +25,9 @@ class RegisterController extends Controller
         if (isset($input['_token']))
             unset($input['_token']);
 
+        if (isset($input['reference']))
+            $input['reference'] = preg_replace("/\d/","",$input['reference']);
+
         $input['brand'] = "knowledgeu";
         $input['parent_domain_id'] = 27986474;
         $input['key'] = Hash::make("ku_admin");
@@ -45,6 +48,9 @@ class RegisterController extends Controller
 
         if (isset($input['_token']))
             unset($input['_token']);
+
+        if (isset($input['reference']))
+            $input['reference'] = preg_replace("/\D/", "", $input['reference']);
 
         $input['brand'] = "brightthinker";
         $input['parent_domain_id'] = 27986377;

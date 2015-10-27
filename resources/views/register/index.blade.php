@@ -97,6 +97,11 @@
                     _message = _input.data('text') + " is not a valid " + _input.attr('id');
                 }
 
+                if (_input.attr('id') == "reference" && !_input.val().replace(/\D/g, '').match(/\d{10}/)) {
+                    containsErrorSwitch = true;
+                    _message = _input.data('text') + " is not a valid phone number";
+                }
+
                 if (_input.attr('id') == "domain" && !_input.parent().parent().hasClass('has-success')) {
                     _message = "You need to verify the domain you've picked.<br/>Please click on the search button (magnifying glass).";
                     if (_input.parent().parent().hasClass('has-error'))
@@ -114,7 +119,9 @@
                         .append(
                         $("<td></td>")
                                 .html(_message));
-                warningModalBody.append(newRow);
+
+                if (containsErrorSwitch && _message)
+                    warningModalBody.append(newRow);
             });
 
             if (containsErrorSwitch) {
@@ -204,6 +211,11 @@
                                    name="password">
                         </div>
                         <div class="form-group">
+                            <label for="reference">Phone number</label>
+                            <input class="form-control" type="text" id="reference" data-text="Phone number"
+                                   name="reference">
+                        </div>
+                        <div class="form-group">
                             <label class="control-label" for="domain">Domain name</label>
 
                             <div class="input-group">
@@ -242,7 +254,8 @@
                             </div>
                         </div>
                     </div>
-                    <button type="button" id="brightThinkerTestDriveBtn" class="btn submitBtn btn-lg btn-block">Test drive
+                    <button type="button" id="brightThinkerTestDriveBtn" class="btn submitBtn btn-lg btn-block">Test
+                        drive
                         for free?
                     </button>
                     <div class="row">

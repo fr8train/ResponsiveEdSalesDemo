@@ -73,6 +73,7 @@
         var email = '<?= $email ?>';
         var password = '<?= $password ?>';
         var domainName = '<?= $domain ?>';
+        var phone = '<?= $reference ?>';
         var parentDomainId = parseInt(<?= $parent_domain_id ?>);
 
         var statusMessage = $("#statusMessage");
@@ -138,6 +139,7 @@
                         lastname: lastName,
                         email: email,
                         password: password,
+                        reference: phone,
                         key: '<?= $key ?>'
                     }, function (jqXHR, textStatus) {
                         var time = new Date() - startTime;

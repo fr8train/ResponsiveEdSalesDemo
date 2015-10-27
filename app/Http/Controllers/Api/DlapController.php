@@ -250,6 +250,7 @@ class DlapController extends Controller
                         'firstname' => "{$request->get('firstname')}",
                         'lastname' => "{$request->get('lastname')}",
                         'email' => "{$request->get('email')}",
+                        'reference' => "{$request->get('reference')}",
                         'domainid' => "//{$request->get('userspace')}"
                     )
                 )
@@ -504,10 +505,18 @@ class DlapController extends Controller
 
             $domains['kudemo'] = $result->response->domains->domain;
 
+            usort($domains['btdemo'], array("\App\Http\Controllers\Api\DlapController", "sortDomains"));
+            usort($domains['kudemo'], array("\App\Http\Controllers\Api\DlapController", "sortDomains"));
+
             return $this->__response("Domains gathered.", 200, $domains);
         } else {
             return $this->__response("User is not authenticated.", 401);
         }
+    }
+
+    public function sortDomains($a, $b)
+    {
+        return $a->creationdate >= $b->creationdate;
     }
 
     public function getDomain($id)
@@ -519,18 +528,115 @@ class DlapController extends Controller
 
             $response['domain'] = $result->response->domain;
 
+            // LOOK UP CREATEDBY AND MODIFIED BY INFO
+            $result = Api::get("cmd=getuser2&userid={$response['domain']->creationby}&_token={$this->token}");
+            $this->saveToken($result, $this->token);
+            if (isset($result->response->user->username))
+                $response['domain']->creationby = "{$result->response->user->firstname} {$result->response->user->lastname} ({$result->response->user->username})";
+
+            $result = Api::get("cmd=getuser2&userid={$response['domain']->modifiedby}&_token={$this->token}");
+            $this->saveToken($result, $this->token);
+            if (isset($result->response->user->username))
+                $response['domain']->modifiedby = "{$result->response->user->firstname} {$result->response->user->lastname} ({$result->response->user->username})";
+
             $result = Api::get("cmd=listusers&domainid=$id&_token={$this->token}");
             $this->saveToken($result, $this->token);
 
             if (isset($result->response->users->user))
                 $response['users'] = $result->response->users->user;
             else
-                $response['users'] = $result->response->users;
+                $response['users'] = array();
 
             return $this->__response("Info for Domain (ID=$id) gathered.", 200, $response);
         } else {
             return $this->__response("User is not authenticated.", 401);
         }
+    }
+
+    public function postDomain(Request $request)
+    {
+        if (!$this->isAuthenticated()) {
+            return $this->__response("User is not authenticated.", 401);
+        }
+
+        if ($request->has('deleteDomain')) { // DELETE DOMAIN
+            $result = Api::get("cmd=deletedomain&domainid={$request->get('id')}&_token={$this->token}");
+        } elseif ($request->has('parentid')) { // CONVERT DOMAIN
+            $result = Api::post(array(
+                'requests' => array(
+                    'domain' => array(
+                        array(
+                            "domainid" => $request->get('id'),
+                            "parentid" => $request->get('parentid')
+                        )
+                    )
+                )
+            ), "cmd=updatedomains&_token={$this->token}");
+
+            $this->saveToken($result, $this->token);
+
+            $result = Api::post(array(
+                'requests' => array(
+                    'user' => array(
+                        array(
+                            "username" => "admin",
+                            "password" => "password",
+                            "firstname" => "admin",
+                            "lastname" => "user",
+                            "domainid" => $request->get('id'),
+                            "rights" => "-1"
+                        )
+                    )
+                )
+            ), "cmd=createusers2&_token={$this->token}");
+        } else { // SAVE DOMAIN INFO
+            $result = Api::post(array(
+                'requests' => array(
+                    'domain' => array(
+                        array(
+                            "domainid" => $request->get('id'),
+                            "name" => $request->get('name'),
+                            "reference" => $request->get('reference')
+                        )
+                    )
+                )
+            ), "cmd=updatedomains&_token={$this->token}");
+        }
+        $this->saveToken($result, $this->token);
+
+        return $this->__response("Domain updated");
+    }
+
+    public function postUsers(Request $request)
+    {
+        if (!$this->isAuthenticated()) {
+            return $this->__response("User is not authenticated.", 401);
+        }
+
+        $data = array(
+            'requests' => array(
+                'user' => array()
+            )
+        );
+
+        foreach ($request->all() as $userId => $user) {
+            $newUser = array(
+                'userid' => $userId
+            );
+
+            foreach ($user as $attr => $value) {
+                if ($attr != "id") {
+                    $newUser[$attr] = $value;
+                }
+            }
+
+            array_push($data['requests']['user'], $newUser);
+        }
+
+        $result = Api::post($data, "cmd=updateusers&_token={$this->token}");
+        $this->saveToken($result, $this->token);
+
+        return $this->__response("Users updated");
     }
 
     /**

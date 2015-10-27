@@ -32,7 +32,7 @@
             getAllDomains();
         });
 
-        function getAllDomains() {
+        function getAllDomains(btFilter, kuFilter) {
             _body.empty();
             $.getJSON("{{ url('dlap/all-domains') }}")
                     .done(function (data) {
@@ -41,18 +41,34 @@
 
                         var btDomains = $('<div></div>')
                                 .attr('class', 'col-sm-6')
-                                .append($('<h3><a target="_blank" href="{{ url('register/bright-thinker') }}"><img height="32" alt="BTLogo" src="{{ url('img/ProfessorEd-headshot.png') }}"></a>BrightThinker Domains</h3>'));
+                                .append($('<h3><a target="_blank" href="{{ url('register/bright-thinker') }}"><img height="32" alt="BTLogo" src="{{ url('img/ProfessorEd-headshot.png') }}"></a>BrightThinker Domains</h3>'))
+                                .append('<div class="row" style="margin-bottom: 10px;"><div class="col-xs-12"><div class="input-group"><input id="btFilterInput" type="text" class="form-control" placeholder="Filter by..."><span class="input-group-btn"><button class="btn btn-default" type="button" onclick="filterResults(\'btFilterInput\')"><i class="fa fa-filter"></i></button></span></div></div></div>');
 
                         $.each(data.payload.btdemo, function (k, v) {
-                            btDomains.append(createDomainDisplayCard(v));
+                            if (btFilter) {
+                                var re = new RegExp(btFilter);
+                                if (v.name.match(re)
+                                        || v.reference.match(re)
+                                        || v.userspace.match(re))
+                                    btDomains.append(createDomainDisplayCard(v));
+                            } else
+                                btDomains.append(createDomainDisplayCard(v));
                         });
 
                         var kuDomains = $('<div></div>')
                                 .attr('class', 'col-sm-6')
-                                .append($('<h3><a target="_blank" href="{{ url('register/knowledge-u') }}"><img height="32" alt="BTLogo" src="{{ url('img/KnowledgeUBox.png') }}"></a>KnowledgeU Domains</h3>'));
+                                .append($('<h3><a target="_blank" href="{{ url('register/knowledge-u') }}"><img height="32" alt="BTLogo" src="{{ url('img/KnowledgeUBox.png') }}"></a>KnowledgeU Domains</h3>'))
+                                .append('<div class="row" style="margin-bottom: 10px;"><div class="col-xs-12"><div class="input-group"><input id="kuFilterInput" type="text" class="form-control" placeholder="Filter by..."><span class="input-group-btn"><button class="btn btn-default" type="button" onclick="filterResults(\'kuFilterInput\')"><i class="fa fa-filter"></i></button></span></div></div></div>');
 
                         $.each(data.payload.kudemo, function (k, v) {
-                            kuDomains.append(createDomainDisplayCard(v));
+                            if (kuFilter) {
+                                var re = new RegExp(kuFilter);
+                                if (v.name.match(re)
+                                        || v.reference.match(re)
+                                        || v.userspace.match(re))
+                                    kuDomains.append(createDomainDisplayCard(v));
+                            } else
+                                kuDomains.append(createDomainDisplayCard(v));
                         });
 
                         _body.append(btDomains).append(kuDomains);
@@ -60,6 +76,13 @@
                     .fail(function (jqxhr, textStatus, error) {
                         console.log(error);
                     });
+        }
+
+        function filterResults(id) {
+            if (id.match(/bt/))
+                getAllDomains($("#" + id).val());
+            else
+                getAllDomains(null, $("#" + id).val());
         }
 
         function createDomainDisplayCard(domain) {
@@ -70,21 +93,16 @@
             if (diff >= 30)
                 _diff.append($('<span class="label label-danger" style="margin-left: 8px;">EXPIRED</span>'));
 
-            var uri = "http://" + domain.userspace + ".agilixbuzz.com";
+            var uri = domain.userspace + ".agilixbuzz.com";
 
             var _dl = $('<dl></dl>')
                     .attr('class', 'dl-horizontal')
                     .append('<dt>Live URL</dt>')
-                    .append('<dd><a target="_blank" href="' + uri + '">' + uri + '</a></dd>')
+                    .append('<dd><a target="_blank" href="http://' + uri + '">' + uri + '</a></dd>')
                     .append('<dt>Days active</dt>')
                     .append(_diff);
 
             var btnGroup = $('<div class="btn-group btn-group-sm pull-right" role="group"></div>')
-                    .css({
-                        position: 'absolute',
-                        bottom: '10px',
-                        right: '10px'
-                    })
                     .append($('<button onclick="editDomain(' + domain.id + ')"></button>')
                             .attr({
                                 class: 'btn btn-default',
@@ -109,14 +127,14 @@
 
             return $('<div class="panel panel-primary"></div>')
                     .css('position', 'relative')
-                    .append(btnGroup)
                     .append($('<div class="panel-heading"></div>')
                             .append($('<h3 class="panel-title"></h3>')
                                     .append(domain.name)
                                     .append($('<span class="label label-info pull-right"></span>')
                                             .html(domain.id))))
                     .append($('<div class="panel-body"></div>')
-                            .append(_dl));
+                            .append(_dl)
+                            .append(btnGroup));
         }
 
         function dateDiff(date1, date2) {
@@ -138,10 +156,41 @@
             _body.empty();
             _body.append('<div class="col-xs-12" style="margin-bottom: 15px;"><a target="_self" href="">Return back to Domains</a></div>');
 
+            var creationdate = new Date(domain.creationdate);
+            var modifieddate = new Date(domain.modifieddate);
+
+            var panelForm = $('<form class="form-horizontal"></form>')
+                    .append(createFormGroupReadOnly('ID', 'id', domain.id))
+                    .append(createFormGroup('Domain name', 'name', domain.name))
+                    .append(createFormGroupReadOnly('Domain space', 'userspace-ro', domain.userspace))
+                    .append(createFormGroup('Reference', 'reference', domain.reference))
+                    .append(createFormGroupReadOnly('Created by', 'creationby-ro', domain.creationby))
+                    .append(createFormGroupReadOnly('Created', 'created-ro', creationdate.toLocaleString()))
+                    .append(createFormGroupReadOnly('Modified by', 'modifiedby-ro', domain.modifiedby))
+                    .append(createFormGroupReadOnly('Modified', 'modified-ro', modifieddate.toLocaleString()))
+                    .append('<div class="row"><div class="col-xs-12"><button type="button" class="btn btn-primary pull-right" onclick="saveDomainInfo(' + domain.id + ')">Save Domain Info</button></div></div>')
+                    .append('<h4>Users</h4><hr/>');
+
+            $.each(users, function (k, v) {
+                var lastlogindate = new Date(v.lastlogindate);
+                panelForm.append(createFormGroupReadOnly('ID', 'id-' + v.id, v.id))
+                        .append(createFormGroup('First name', 'firstname-' + v.id, v.firstname))
+                        .append(createFormGroup('Last name', 'lastname-' + v.id, v.lastname))
+                        .append(createFormGroup('Email', 'email-' + v.id, v.email))
+                        .append(createFormGroup('Username', 'username-' + v.id, v.username))
+                        .append(createFormGroup('Reference', 'reference-' + v.id, v.reference));
+
+                if (k == users.length - 1)
+                    panelForm.append(createFormGroupReadOnly('Last login', 'lastlogindate-' + v.id + '-ro', lastlogindate.toLocaleString()));
+                else
+                    panelForm.append($(createFormGroupReadOnly('Last login', 'lastlogindate-' + v.id + '-ro', lastlogindate.toLocaleString())).css('margin-bottom', '49px'));
+            });
+
+            panelForm.append('<div class="row"><div class="col-xs-12"><button type="button" class="btn btn-primary pull-right" onclick="saveUserInfo(' + domain.id + ')">Save User Info</button></div></div>');
+
             var panelBody = $('<div class="row"></div>')
                     .append($('<div class="col-xs-12"></div>')
-                            .append($('<form class="form-horizontal"></form>')
-                                    .append(createFormGroup('Domain name', 'name', domain.name))));
+                            .append(panelForm));
 
             var panel = $('<div class="panel panel-primary"></div>')
                     .append($('<div class="panel-heading"></div>')
@@ -149,8 +198,53 @@
                     .append($('<div class="panel-body"></div>')
                             .append(panelBody));
 
-            _body.append($('<div class="col-xs-12"></div>')
+            _body.append($('<div class="col-xs-12 col-sm-8"></div>')
                     .append(panel));
+        }
+
+        function saveDomainInfo(id) {
+            var domain = {};
+
+            var notDomainField = new RegExp(".*?\-.*?");
+            $('input').each(function (k, v) {
+                if (!notDomainField.test(v.id)) {
+                    domain[v.id] = $(v).val();
+                }
+            });
+
+            console.log(domain);
+
+            $.post('{{ url('dlap/domain') }}', JSON.stringify(domain), function (data, textStatus) {
+                console.log(data);
+
+                editDomain(id)
+            }, "json");
+        }
+
+        function saveUserInfo(domainId) {
+            var users = {};
+
+            var userField = new RegExp(".*?\-.*?");
+            var endsWith = new RegExp("\-ro$");
+
+            $('input').each(function (k, v) {
+                if (userField.test(v.id) && !endsWith.test(v.id)) {
+                    idSplit = v.id.split("-");
+
+                    if (!users[idSplit[1]])
+                        users[idSplit[1]] = {};
+
+                    users[idSplit[1]][idSplit[0]] = $(v).val();
+                }
+            });
+
+            console.log(users);
+
+            $.post('{{ url('dlap/users') }}', JSON.stringify(users), function (data, textStatus) {
+                console.log(data);
+
+                editDomain(domainId);
+            });
         }
 
         function createFormGroup(label, name, value) {
@@ -158,10 +252,10 @@
                     .append($('<label></label>')
                             .attr({
                                 for: name,
-                                class: 'col-sm-2 control-label'
+                                class: 'col-sm-3 control-label'
                             })
                             .html(label))
-                    .append($('<div class="col-sm-10"></div>')
+                    .append($('<div class="col-sm-9"></div>')
                             .append($('<input />')
                                     .attr({
                                         type: 'text',
@@ -172,17 +266,49 @@
                                     })));
         }
 
+        function createFormGroupReadOnly(label, name, value) {
+            return $('<div class="form-group"></div>')
+                    .append($('<label></label>')
+                            .attr({
+                                for: name,
+                                class: 'col-sm-3 control-label'
+                            })
+                            .html(label))
+                    .append($('<div class="col-sm-9"></div>')
+                            .append($('<input />')
+                                    .attr({
+                                        type: 'text',
+                                        class: 'form-control',
+                                        id: name,
+                                        name: name,
+                                        value: value,
+                                        disabled: 'disabled'
+                                    })));
+        }
+
         function deleteDomain(id) {
             if (confirm("Are you sure you want to delete domain (ID=" + id + ")?")) {
-                console.log('todo: deletedomain');
-                getAllDomains();
+                $.post('{{ url('dlap/domain') }}', JSON.stringify({
+                    id: id,
+                    deleteDomain: 1
+                }), function (data, textStatus) {
+                    console.log(data);
+
+                    getAllDomains();
+                }, "json");
             }
         }
 
         function convertDomain(id) {
             if (confirm("Are you sure you want to convert domain (ID=" + id + ")?")) {
-                console.log('todo: convertdomain');
-                getAllDomains();
+                $.post('{{ url('dlap/domain') }}', JSON.stringify({
+                    id: id,
+                    parentid: 12444139
+                }), function (data, textStatus) {
+                    console.log(data);
+
+                    getAllDomains();
+                }, "json");
             }
         }
     </script>

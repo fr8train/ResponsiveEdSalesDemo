@@ -33,6 +33,16 @@
             background-color: #eee;
         }
     </style>
+
+    <script type="text/javascript">
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            contentType: "application/json; charset=utf-8",
+            dataType: "json"
+        });
+    </script>
 </head>
 <body>
 @yield('body')
