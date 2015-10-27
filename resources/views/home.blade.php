@@ -46,7 +46,7 @@
 
                         $.each(data.payload.btdemo, function (k, v) {
                             if (btFilter) {
-                                var re = new RegExp(btFilter);
+                                var re = new RegExp(btFilter, 'i');
                                 if (v.name.match(re)
                                         || v.reference.match(re)
                                         || v.userspace.match(re))
@@ -62,7 +62,7 @@
 
                         $.each(data.payload.kudemo, function (k, v) {
                             if (kuFilter) {
-                                var re = new RegExp(kuFilter);
+                                var re = new RegExp(kuFilter, 'i');
                                 if (v.name.match(re)
                                         || v.reference.match(re)
                                         || v.userspace.match(re))
