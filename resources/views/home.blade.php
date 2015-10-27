@@ -8,11 +8,18 @@
             <div class="navbar-header">
                 <a class="navbar-brand" href="#">Admin Panel</a>
             </div>
-            <div class="navbar-right">
-                <img alt="person-icon" style="margin-top: 10px;" class="pull-left" width="30"
-                     src="{{ url('img/person.png') }}">
-
-                <p class="navbar-text">{{ "{$user->firstname} {$user->lastname}" }}</p>
+            <div class="collapse navbar-collapse" id="user-navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><img alt="person-icon" style="margin-top: 10px;" class="pull-left" width="30"
+                             src="{{ url('img/person.png') }}"></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">{{ "{$user->firstname} {$user->lastname}" }} <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{{ url('auth/logout') }}">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>

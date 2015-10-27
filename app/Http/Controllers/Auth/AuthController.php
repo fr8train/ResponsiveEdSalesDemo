@@ -64,4 +64,9 @@ class AuthController extends Controller
             die();
         }
     }
+
+    public function getLogout() {
+        Cache::forget('username');
+        return redirect('auth/login');
+    }
 }
