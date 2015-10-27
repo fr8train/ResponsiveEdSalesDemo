@@ -26,7 +26,7 @@ class RegisterController extends Controller
             unset($input['_token']);
 
         if (isset($input['reference']))
-            $input['reference'] = preg_replace("/\d/","",$input['reference']);
+            $input['reference'] = preg_replace("/\D/","",$input['reference']);
 
         $input['brand'] = "knowledgeu";
         $input['parent_domain_id'] = 27986474;
