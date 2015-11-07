@@ -52,14 +52,16 @@
                                 .append('<div class="row" style="margin-bottom: 10px;"><div class="col-xs-12"><div class="input-group"><input id="btFilterInput" type="text" class="form-control" placeholder="Filter by..."><span class="input-group-btn"><button class="btn btn-default" type="button" onclick="filterResults(\'btFilterInput\')"><i class="fa fa-filter"></i></button></span></div></div></div>');
 
                         $.each(data.payload.btdemo, function (k, v) {
-                            if (btFilter) {
-                                var re = new RegExp(btFilter, 'i');
-                                if (v.name.match(re)
-                                        || v.reference.match(re)
-                                        || v.userspace.match(re))
+                            if (v.userspace != "btcourses") {
+                                if (btFilter) {
+                                    var re = new RegExp(btFilter, 'i');
+                                    if (v.name.match(re)
+                                            || v.reference.match(re)
+                                            || v.userspace.match(re))
+                                        btDomains.append(createDomainDisplayCard(v));
+                                } else
                                     btDomains.append(createDomainDisplayCard(v));
-                            } else
-                                btDomains.append(createDomainDisplayCard(v));
+                            }
                         });
 
                         var kuDomains = $('<div></div>')
@@ -68,14 +70,16 @@
                                 .append('<div class="row" style="margin-bottom: 10px;"><div class="col-xs-12"><div class="input-group"><input id="kuFilterInput" type="text" class="form-control" placeholder="Filter by..."><span class="input-group-btn"><button class="btn btn-default" type="button" onclick="filterResults(\'kuFilterInput\')"><i class="fa fa-filter"></i></button></span></div></div></div>');
 
                         $.each(data.payload.kudemo, function (k, v) {
-                            if (kuFilter) {
-                                var re = new RegExp(kuFilter, 'i');
-                                if (v.name.match(re)
-                                        || v.reference.match(re)
-                                        || v.userspace.match(re))
+                            if (v.userspace != "kucourses") {
+                                if (kuFilter) {
+                                    var re = new RegExp(kuFilter, 'i');
+                                    if (v.name.match(re)
+                                            || v.reference.match(re)
+                                            || v.userspace.match(re))
+                                        kuDomains.append(createDomainDisplayCard(v));
+                                } else
                                     kuDomains.append(createDomainDisplayCard(v));
-                            } else
-                                kuDomains.append(createDomainDisplayCard(v));
+                            }
                         });
 
                         _body.append(btDomains).append(kuDomains);
@@ -105,7 +109,7 @@
             var _dl = $('<dl></dl>')
                     .attr('class', 'dl-horizontal')
                     .append('<dt>Live URL</dt>')
-                    .append('<dd><a target="_blank" href="http://' + uri + '">' + uri + '</a></dd>')
+                    .append('<dd><a style="word-wrap: break-word;" target="_blank" href="http://' + uri + '">' + uri + '</a></dd>')
                     .append('<dt>Days active</dt>')
                     .append(_diff);
 

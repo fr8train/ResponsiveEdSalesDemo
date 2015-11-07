@@ -21,6 +21,10 @@ Route::controller('auth', 'Auth\\AuthController');
 Route::get('/', function () {
     $dlap = new DlapController();
 
+    if (Cache::has('username') && (Cache::get('username') == 'btadmin' || Cache::get('username') == 'kuadmin')) {
+        Cache::forget('username');
+    }
+
     if ($dlap->isAuthenticated()) {
         $user = User::where('username', Cache::get('username'))
             ->with('token')
