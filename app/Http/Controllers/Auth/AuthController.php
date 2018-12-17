@@ -48,7 +48,7 @@ class AuthController extends Controller
                 }
 
                 // CHECK FOR ADMIN LEVEL RIGHTS ON RESPONSIVE ED DOMAIN
-                $result = Api::get("cmd=getrights&actorid={$response->payload->user->userid}&entityid=12444139&_token={$response->payload->_token}");
+                $result = Api::get("cmd=getrights&actorid={$response->payload->user->userid}&entityid=12444139&_token={$response->payload->user->token}");
                 if ($result->response->code != "OK" ||
                     $result->response->rights->flags != "-1") {
                     header("Location: http://{$request->get('domain')}.agilixbuzz.com/");

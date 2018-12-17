@@ -10,7 +10,7 @@ namespace App\Library\Dlap;
 
 class Api
 {
-    private $uri = "https://dlap.agilix.com/dlap.ashx";
+    private $uri = "https://gls.agilix.com/cmd";
 
     /**
      * HTTP GET cURL Call

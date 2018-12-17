@@ -43,7 +43,7 @@ class DlapController extends Controller
 
         $response = Api::post(array(
             'request' => array(
-                'cmd' => 'login',
+                'cmd' => 'login2',
                 'username' => "{$request->get('domainName')}/{$request->get('username')}",
                 'password' => "{$request->get('password')}"
             )
@@ -398,7 +398,7 @@ class DlapController extends Controller
             $result = $this->postLogin($loginRequest);
             $json = $result->getData();
 
-            $token = $json->payload->_token;
+            $token = $json->payload->user->token;
         } else {
             $user = User::where('username', $admin)
                 ->with('token')->first();
@@ -506,13 +506,15 @@ class DlapController extends Controller
             $result = Api::get("cmd=listdomains&domainid=//btdemo&_token={$this->token}");
             $this->saveToken($result, $this->token);
 
-            $domains['btdemo'] = $result->response->domains->domain;
+            $domains['btdemo'] = is_array($result->response->domains) &&
+                count($result->response->domains) > 0 ? $result->response->domains->domain : [];
 
             // GET ALL KUDEMO DOMAINS
             $result = Api::get("cmd=listdomains&domainid=//kudemo&_token={$this->token}");
             $this->saveToken($result, $this->token);
 
-            $domains['kudemo'] = $result->response->domains->domain;
+            $domains['kudemo'] = is_array($result->response->domains) &&
+            count($result->response->domains) > 0 ? $result->response->domains->domain : [];
 
             usort($domains['btdemo'], array("\App\Http\Controllers\Api\DlapController", "sortDomains"));
             usort($domains['kudemo'], array("\App\Http\Controllers\Api\DlapController", "sortDomains"));
