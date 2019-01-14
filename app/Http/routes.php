@@ -29,7 +29,7 @@ Route::get('/', function () {
         $user = User::where('username', Cache::get('username'))
             ->with('token')
             ->first();
-        if ($user->domain_space == "responsiveed")
+        if ($user->domain_space == "blue-demo")
             return view('home', array(
                 'user' => $user
             ));

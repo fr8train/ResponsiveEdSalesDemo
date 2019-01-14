@@ -34,7 +34,7 @@ class AuthController extends Controller
     public function postLogin(Request $request) {
         //var_dump($request->all());
 
-        if ($request->get('domain') == "responsiveed") {
+        if ($request->get('domain') == "blue-demo") {
             if (!$this->dlap->isAuthenticated($request->get('username'))) {
                 $result = $this->dlap->postLogin(new Request(array(
                     'domainName' => $request->get('domain'),
@@ -48,7 +48,7 @@ class AuthController extends Controller
                 }
 
                 // CHECK FOR ADMIN LEVEL RIGHTS ON RESPONSIVE ED DOMAIN
-                $result = Api::get("cmd=getrights&actorid={$response->payload->user->userid}&entityid=12444139&_token={$response->payload->user->token}");
+                $result = Api::get("cmd=getrights&actorid={$response->payload->user->userid}&entityid=71102460&_token={$response->payload->user->token}");
                 if ($result->response->code != "OK" ||
                     $result->response->rights->flags != "-1") {
                     header("Location: http://{$request->get('domain')}.agilixbuzz.com/");

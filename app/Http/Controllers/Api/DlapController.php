@@ -501,20 +501,30 @@ class DlapController extends Controller
     public function getAllDomains()
     {
         if ($this->isAuthenticated()) {
-            $domains = array();
+            $domains = array(
+                'btdemo' => [],
+                'kudemo' => []
+            );
+
             // GET ALL BTDEMO DOMAINS
             $result = Api::get("cmd=listdomains&domainid=//btdemo&_token={$this->token}");
             $this->saveToken($result, $this->token);
 
-            $domains['btdemo'] = is_array($result->response->domains) &&
-                count($result->response->domains) > 0 ? $result->response->domains->domain : [];
+            if (isset($result->response->domains) &&
+                isset($result->response->domains->domain) &&
+                is_array($result->response->domains->domain)) {
+                $domains['btdemo'] = $result->response->domains->domain;
+            }
 
             // GET ALL KUDEMO DOMAINS
             $result = Api::get("cmd=listdomains&domainid=//kudemo&_token={$this->token}");
             $this->saveToken($result, $this->token);
 
-            $domains['kudemo'] = is_array($result->response->domains) &&
-            count($result->response->domains) > 0 ? $result->response->domains->domain : [];
+            if (isset($result->response->domains) &&
+                isset($result->response->domains->domain) &&
+                is_array($result->response->domains->domain)) {
+                $domains['kudemo'] = $result->response->domains->domain;
+            }
 
             usort($domains['btdemo'], array("\App\Http\Controllers\Api\DlapController", "sortDomains"));
             usort($domains['kudemo'], array("\App\Http\Controllers\Api\DlapController", "sortDomains"));
