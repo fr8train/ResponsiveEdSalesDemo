@@ -121,13 +121,13 @@
                                 title: 'Edit'
                             })
                             .html('<i class="fa fa-edit"></i>'))
-                    /*.append($('<button onclick="convertDomain(' + domain.id + ')"></button>')
+                    .append($('<button onclick="convertDomain(' + domain.id + ')"></button>')
                             .attr({
                                 class: 'btn btn-default',
                                 type: 'button',
                                 title: 'Convert'
                             })
-                            .html('<i class="fa fa-random"></i>'))*/
+                            .html('<i class="fa fa-random"></i>'))
                     .append($('<button onclick="deleteDomain(' + domain.id + ')"></button>')
                             .attr({
                                 class: 'btn btn-default',

@@ -86,6 +86,18 @@
         var teacher = null;
 
         var consumedUserInfoGate = false;
+        var currentProgress = 0;
+        var enrollmentResponseAjax = {};
+
+        var courseDictionary = {};
+
+        $(document).on('updateProgressBar', progressBarUpdate);
+
+        function progressBarUpdate(e) {
+            currentProgress += e.increase;
+            $("#statusBar").css('width', currentProgress + '%')
+                .attr('aria-valuenow', currentProgress);
+        }
 
         // AJAX VARIABLES
         $.ajaxSetup({
@@ -106,6 +118,7 @@
         function createDomain() {
             startTime = new Date();
             statusMessage.html("Creating domain " + domainName + "...");
+
             dlap('{{ url('dlap/create-domain') }}',
                     {
                         domainName: domainName,
@@ -120,7 +133,12 @@
                             setTimeout(function () {
                                 var response = JSON.parse(jqXHR.responseText);
                                 console.log(response);
-                                statusBar.css('width', '20%').attr('aria-valuenow', 20);
+
+                                $.event.trigger({
+                                    type: 'updateProgressBar',
+                                    increase: 2
+                                });
+
                                 registeredUserSpace = response.payload.userspace;
                                 createUserAccount();
                             }, time);
@@ -131,6 +149,7 @@
         function createUserAccount() {
             startTime = new Date();
             statusMessage.html("Creating user accounts...");
+
             dlap('{{ url('dlap/create-users') }}',
                     {
                         userspace: registeredUserSpace,
@@ -150,7 +169,10 @@
                             setTimeout(function () {
                                 var response = JSON.parse(jqXHR.responseText);
                                 console.log(response);
-                                statusBar.css('width', '50%').attr('aria-valuenow', 50);
+                                $.event.trigger({
+                                    type: 'updateProgressBar',
+                                    increase: 3
+                                });
 
                                 // SET USER DISPLAY AND THEN DISPLAY USER INFO
                                 student = response.payload.student;
@@ -175,7 +197,8 @@
 
         function enrollUsers() {
             startTime = new Date();
-            statusMessage.html("Enrolling users in demo courses...");
+            statusMessage.html("Creating courses...");
+
             dlap('{{ url('dlap/enroll-users') }}',
                     {
                         parentDomainId: parentDomainId,
@@ -187,32 +210,155 @@
                         var time = new Date() - startTime;
 
                         if (jqXHR.status == 200) {
-                            time = time < 1500 ? 1500 - time : 0;
+                            var response = Boolean(jqXHR.responseJSON) ? jqXHR.responseJSON : JSON.parse(jqXHR.responseText);
+                            console.log(response);
 
-                            setTimeout(function () {
-                                var response = JSON.parse(jqXHR.responseText);
-                                console.log(response);
-                                statusBar.css('width', '85%').attr('aria-valuenow', 85);
-                                navigateToNewDomain();
-                            }, time);
+                            var hasValidTeacherResponse = Boolean(response.payload && response.payload.toBeEnrolled && response.payload.toBeEnrolled.teacher),
+                                hasValidStudentResponse = Boolean(response.payload && response.payload.toBeEnrolled && response.payload.toBeEnrolled.student);
+
+                            if (hasValidStudentResponse) {
+                                for (courseId in response.payload.toBeEnrolled.student.enrollments) {
+                                    if (!courseDictionary.hasOwnProperty(courseId)) {
+                                        courseDictionary[courseId] = 0;
+                                    }
+                                }
+                            }
+
+                            if (hasValidTeacherResponse) {
+                                for (courseId in response.payload.toBeEnrolled.teacher.enrollments) {
+                                    if (!courseDictionary.hasOwnProperty(courseId)) {
+                                        courseDictionary[courseId] = 0;
+                                    }
+                                }
+                            }
+
+                            var perCourseProgressTick = Math.floor((65 / Object.keys(courseDictionary).length) * 100) / 100;
+                            var courseDictionaryKeys = Object.keys(courseDictionary);
+                            var totalRequests = 0;
+
+                            recursiveCourseCopy(courseDictionaryKeys, courseDictionary, totalRequests, perCourseProgressTick, response);
                         }
                     });
+        }
+
+        function recursiveCourseCopy(courseDictionaryKeys, courseDictionary, totalRequests, progressTick, response) {
+            var courseIdIdx = courseDictionaryKeys[totalRequests++];
+
+            dlap('{{ url('dlap/derivative-course-copy') }}', {
+                userspace: registeredUserSpace,
+                parentDomainId: parentDomainId,
+                courseId: courseIdIdx,
+                key: '<?= $key ?>'
+            }, function (jqXHR, textStatus) {
+                var response2 = Boolean(jqXHR.responseJSON) ? jqXHR.responseJSON : JSON.parse(jqXHR.responseText);
+                console.log(response2);
+
+                courseDictionary[courseIdIdx] = response2.payload[courseIdIdx];
+
+                setTimeout(function () {
+                    $.event.trigger({
+                        type: 'updateProgressBar',
+                        increase: progressTick
+                    });
+
+                    if (totalRequests === Object.keys(courseDictionary).length) {
+                        prepareEnrollments(response, courseDictionary);
+                    } else {
+                        recursiveCourseCopy(courseDictionaryKeys, courseDictionary, totalRequests, progressTick, response);
+                    }
+                }, 200);
+            }, false);
+        }
+
+        function prepareEnrollments(response, courseDictionary) {
+            var totalEnrollments = 0,
+                studentTotalEnrollments = 0,
+                teacherTotalEnrollments = 0,
+                hasValidTeacherResponse = Boolean(response.payload && response.payload.toBeEnrolled && response.payload.toBeEnrolled.teacher),
+                hasValidStudentResponse = Boolean(response.payload && response.payload.toBeEnrolled && response.payload.toBeEnrolled.student);
+
+
+            if (hasValidStudentResponse) {
+                studentTotalEnrollments = Object.keys(response.payload.toBeEnrolled.student.enrollments).length;
+                totalEnrollments += studentTotalEnrollments;
+            }
+
+            if (hasValidTeacherResponse) {
+                teacherTotalEnrollments = Object.keys(response.payload.toBeEnrolled.teacher.enrollments).length;
+                totalEnrollments += teacherTotalEnrollments;
+            }
+
+            var perEnrollmentProgressTick = Math.floor((20 / totalEnrollments) * 100) / 100;
+
+            if (hasValidTeacherResponse && hasValidStudentResponse) {
+                for (var courseId in response.payload.toBeEnrolled.student.enrollments) {
+                    enrollUser(response.payload.toBeEnrolled.student.id, {
+                        courseId: courseDictionary[courseId],
+                        rights: response.payload.toBeEnrolled.student.enrollments[courseId]
+                    }, perEnrollmentProgressTick);
+                }
+
+                for (var courseId in response.payload.toBeEnrolled.teacher.enrollments) {
+                    enrollUser(response.payload.toBeEnrolled.teacher.id, {
+                        courseId: courseDictionary[courseId],
+                        rights: response.payload.toBeEnrolled.teacher.enrollments[courseId]
+                    }, perEnrollmentProgressTick);
+                }
+            }
+        }
+
+        function enrollUser(userId, enrollment, perEnrollmentTick) {
+            statusMessage.html("Enrolling users in demo courses...");
+            var id = uuidv4();
+            enrollmentResponseAjax[id] = 1;
+
+            dlap('{{ url('dlap/enroll-user') }}', {
+                userId: userId,
+                courseId: enrollment.courseId,
+                parentDomainId: parentDomainId,
+                rights: enrollment.rights,
+                key: '<?= $key ?>'
+            }, function (jqXHR, textStatus) {
+                var response = Boolean(jqXHR.responseJSON) ? jqXHR.responseJSON : JSON.parse(jqXHR.responseText);
+                delete enrollmentResponseAjax[id];
+
+                $.event.trigger({
+                    type: 'updateProgressBar',
+                    increase: perEnrollmentTick
+                });
+
+                if (Object.keys(enrollmentResponseAjax).length === 0) {
+                    navigateToNewDomain();
+                }
+            });
         }
 
         function navigateToNewDomain() {
             console.log(registeredUserSpace);
             statusMessage.empty().html("Navigating to new domain...");
+            statusBar.css("width", "100%").attr("aria-valuenow", 100);
             setTimeout(function () {
-                statusBar.css("width", "100%").attr("aria-valuenow", 100);
                 window.location.href = "http://" + registeredUserSpace + ".agilixbuzz.com";
             }, 1500);
         }
 
-        function dlap(uri, _data, func) {
+        function uuidv4() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        }
+
+        function dlap(uri, _data, func, async) {
+            if (!Boolean(async) && async !== false) {
+                async = true;
+            }
+
             $.ajax({
                 url: uri,
                 method: "POST",
-                data: JSON.stringify(_data)
+                data: JSON.stringify(_data),
+                async: async
             }).complete(function (jqXHR, textStatus) {
                 func(jqXHR, textStatus);
             });

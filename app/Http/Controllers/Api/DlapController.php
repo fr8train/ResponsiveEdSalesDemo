@@ -319,44 +319,65 @@ class DlapController extends Controller
             }
         }
 
-        $courseDictionary = array();
+        return $this->__response("Finished enrollment gather and derivative course creation.", 200, array(
+            'toBeEnrolled' => $usersToBeCopied
+        ));
+    }
 
-        foreach ($usersToBeCopied as $userType => $userToBeCopied) {
-            foreach ($userToBeCopied->enrollments as $courseId => $rights) {
-                // IF NEW COURSE DOESN'T EXIST WE NEED TO MAKE IT
-                if (!array_key_exists($courseId, $courseDictionary)) {
-                    $response = Api::post(array(
-                        'requests' => array(
-                            'course' => array(
-                                array(
-                                    'courseid' => $courseId,
-                                    'domainid' => "//{$request->get('userspace')}",
-                                    'action' => 'DerivativeChildCopy'
-                                )
-                            )
-                        )
-                    ), "cmd=copycourses&_token=$token");
-                    $this->saveToken($response, $token);
+    public function postDerivativeCourseCopy(Request $request) {
+        if ($request->has("token")) {
+            $token = $request->get("token");
+        } else {
+            $token = "";
+            $decrypted = $request->get("parentDomainId") == 27986377 ? "bt_admin" : "ku_admin";
 
-                    $courseDictionary[$courseId] = $response->response->responses->response[0]->course->courseid;
-                }
+            if ($request->has("key") && Hash::check($decrypted, $request->get("key")))
+                $token = $this->getAdminToken($request->get("parentDomainId"));
+        }
 
-                $response = Api::post(array(
+        $response = Api::post(array(
+            'requests' => array(
+                'course' => array(
+                    array(
+                        'courseid' => $request->get('courseId'),
+                        'domainid' => "//{$request->get('userspace')}",
+                        'action' => 'DerivativeChildCopy'
+                    )
+                )
+            )
+        ), "cmd=copycourses&_token=$token");
+        $this->saveToken($response, $token);
+
+        return $this->__response('Derivative Course Copy Created', 200, array(
+            "{$request->get('courseId')}" => $response->response->responses->response[0]->course->courseid
+        ));
+    }
+
+    public function postEnrollUser(Request $request) {
+        if ($request->has("token")) {
+            $token = $request->get("token");
+        } else {
+            $token = "";
+            $decrypted = $request->get("parentDomainId") == 27986377 ? "bt_admin" : "ku_admin";
+
+            if ($request->has("key") && Hash::check($decrypted, $request->get("key")))
+                $token = $this->getAdminToken($request->get("parentDomainId"));
+        }
+
+        $response = Api::post(array(
                     'requests' => array(
                         'enrollment' => array(
                             array(
-                                'userid' => $request->get("{$userType}Id"),
-                                'entityid' => $courseDictionary[$courseId],
-                                'flags' => $rights,
+                                'userid' => $request->get("userId"),
+                                'entityid' => $request->get("courseId"),
+                                'flags' => $request->get("rights"),
                                 'status' => 1
                             )
                         )
                     )
                 ), "cmd=createenrollments&_token=$token");
-            }
-        }
 
-        return $this->__response("Finished enrollment creation.");
+        return $this->__response('enrollment: ' . json_encode($response), 200);
     }
 
     /**
